@@ -23,14 +23,16 @@ namespace unsaintedWinAppLib {
 		RtfDocumentCreator(Parser^ parser);
 		RtfDocumentCreator(Parser^ parser, RichTextBox^ rtb);
 		RtfDocumentCreator(String^ json, RichTextBox^ rtb);
+		RtfDocumentCreator(String^ json, RichTextBox^ rtb, String^ defaultDate);
 
 		void AddRowToTable(RichTextBox^ richTextBox);
 		Dictionary<String^, String^>^ GetAnalyzesDict();
 		String^ GetRtfDocument();
 		String^ GetRtfDocumentFromDict(String^ key);
 		Parser^ GetParser();
-		void ResetResetRtfDocumentCreator(String^ json);
-		void ResetResetRtfDocumentCreator(Parser^ parser);
+		void ResetRtfDocumentCreator(String^ json);
+		void ResetRtfDocumentCreator(Parser^ parser);
+		void ResetRtfDocumentCreator(String^ json, RichTextBox^ rtb, String^ defaultDate);
 		void InitializeDict(Dictionary<String^, String^>^ dict);
 		property RichTextBox^ ParentRichTextBox {
 			void set(RichTextBox^ value) {
@@ -64,6 +66,7 @@ namespace unsaintedWinAppLib {
 		int PixelsToTwipsY(int pixels, Graphics^ g);
 		int GetRichTextBoxWidthInTwips(RichTextBox^ richTextBox);
 
+		String^ m_defaultDate;
 		String^ m_jsonDocument;
 		String^ m_rtfDocument;
 		Parser^ m_parser;

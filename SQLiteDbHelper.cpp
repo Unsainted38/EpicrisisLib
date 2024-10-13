@@ -178,7 +178,7 @@ namespace unsaintedWinAppLib {
         return results;
     }
     // Функция возвращает отсортированный список строк по убыванию или возрастанию
-    List<String^>^ SQLiteDbHelper::GetSortedColumnData(String^ tableName, String^ columnName, int sortOrder)
+    List<String^>^ SQLiteDbHelper::GetSortedColumnData(String^ tableName, String^ columnName, ColumnSort sortOrder)
     {
         List<String^>^ results = gcnew List<String^>();
 
@@ -188,16 +188,16 @@ namespace unsaintedWinAppLib {
             connection->Open();
             String^ query;
             switch (sortOrder) {
-            case 0:
+            case ColumnSort::Default:
                 query = " SELECT DISTINCT " + columnName +
                     " FROM " + tableName;
                 break;
-            case 1:
+            case ColumnSort::ASC:
                 query = " SELECT DISTINCT " + columnName +
                     " FROM " + tableName +
                     " ORDER BY " + columnName + " ASC ";
                 break;
-            case 2:
+            case ColumnSort::DESC:
                 query = " SELECT DISTINCT " + columnName +
                     " FROM " + tableName +
                     " ORDER BY " + columnName + " DESC ";
@@ -257,9 +257,9 @@ namespace unsaintedWinAppLib {
         }
         return dict;
     }
-    Dictionary<String^, Object^>^ SQLiteDbHelper::ExtractAnalyzesBlankToDictionary(String^ title)
+    Dictionary<String^, JObject^>^ SQLiteDbHelper::ExtractAnalyzesBlankToDictionary(String^ title)
     {
-        Dictionary<String^, Object^>^ result = gcnew Dictionary<String^, Object^>();
+        Dictionary<String^, JObject^>^ result = gcnew Dictionary<String^, JObject^>();
         String^ query = "SELECT id, title, position FROM analyzes WHERE title = @title";
 
         SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
@@ -270,9 +270,9 @@ namespace unsaintedWinAppLib {
             cmd->Parameters->AddWithValue("@title", title);
             SQLiteDataReader^ reader = cmd->ExecuteReader();
             while (reader->Read()) {
-                result->Add("id", reader["id"]->ToString());
-                result->Add("title", reader["title"]->ToString());
-                result->Add("position", reader["position"]->ToString());
+                result->Add("id", JsonConvert::DeserializeObject<JObject^>(reader["id"]->ToString()));
+                result->Add("title", JsonConvert::DeserializeObject<JObject^>(reader["title"]->ToString()));
+                result->Add("position", JsonConvert::DeserializeObject<JObject^>(reader["position"]->ToString()));
 
             }
         }
@@ -322,6 +322,46 @@ namespace unsaintedWinAppLib {
     void SQLiteDbHelper::ImportRtfToDb(String^ table, String^ dectColumn, String^ keyColumn, String^ rtf)
     {
     }
+    void SQLiteDbHelper::ImportEpicrisToDb(Epicris^ epicris) {
+        SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
+        String^ query = "INSERT INTO epicrises (historyNumber, historyYear, birthday, name, surname, patronymic, militaryUnit, rank, incomeDate, outcomeDate, mkb, diagnosis, relatedDiagnosis, complications, anamnesisMorbiResult, analyzes, therapyResult, doctorsResult, additionalInfoResult, recommendationsResult, NonWorkingPaperContent)" +
+            " VALUES (@HistoryNumber, @HistoryYear, @Birthday, @Name, @Surname, @Patronymic, @MilitaryUnit, @Rank, @IncomeDate, @OutcomeDate, @Mkb, @Diagnosis, @RelatedDiagnosis, @Complications, @AnamnesisResult, @Analyzes, @Therapy, @DoctorsLooked, @SideData, @Recommendations, @UnworkableList)";
+        try
+        {
+            connection->Open();
+            SQLiteCommand^ cmd = gcnew SQLiteCommand(query, connection);
+            cmd->Parameters->AddWithValue("@HistoryNumber", epicris->HistoryNumber);
+            cmd->Parameters->AddWithValue("@HistoryYear", epicris->HistoryYear);
+            cmd->Parameters->AddWithValue("@Birthday", epicris->Birthday);
+            cmd->Parameters->AddWithValue("@Name", epicris->Name);
+            cmd->Parameters->AddWithValue("@Surname", epicris->Surname);
+            cmd->Parameters->AddWithValue("@Patronymic", epicris->Patronymic);
+            cmd->Parameters->AddWithValue("@MilitaryUnit", epicris->MilitaryUnit);
+            cmd->Parameters->AddWithValue("@Rank", epicris->Rank);
+            cmd->Parameters->AddWithValue("@IncomeDate", epicris->IncomeDate);
+            cmd->Parameters->AddWithValue("@OutcomeDate", epicris->OutcomeDate);
+            cmd->Parameters->AddWithValue("@Mkb", epicris->Mkb);
+            cmd->Parameters->AddWithValue("@Diagnosis", epicris->Diagnosis);
+            cmd->Parameters->AddWithValue("@RelatedDiagnosis", epicris->RelatedDiagnosis);
+            cmd->Parameters->AddWithValue("@Complications", epicris->Complications);
+            cmd->Parameters->AddWithValue("@AnamnesisResult", epicris->AnamnesisText);
+            cmd->Parameters->AddWithValue("@Analyzes", epicris->AnalyzesListJson);
+            cmd->Parameters->AddWithValue("@Therapy", epicris->Therapy);
+            cmd->Parameters->AddWithValue("@DoctorsLooked", epicris->DoctorsLooked);
+            cmd->Parameters->AddWithValue("@SideData", epicris->SideData);
+            cmd->Parameters->AddWithValue("@Recommendations", epicris->Recommendations);
+            cmd->Parameters->AddWithValue("@UnworkableList", epicris->UnworkableList);
+            cmd->ExecuteNonQuery();
+        }
+        catch (Exception^ ex)
+        {
+            Console::WriteLine("Error: " + ex->Message);
+        }
+        finally {
+            connection->Close();
+            ResetQuery();
+        }
+    }
     void SQLiteDbHelper::GenerateNonQuery() {
         SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
 
@@ -336,7 +376,6 @@ namespace unsaintedWinAppLib {
         }
         catch (Exception^ ex) {
             Console::WriteLine("Error: " + ex->Message);
-            return;
         }
         finally {
             connection->Close();

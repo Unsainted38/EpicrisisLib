@@ -23,6 +23,12 @@ namespace unsaintedWinAppLib {
         InitializeFromJson(json);
     }
 
+    RtfDocumentCreator::RtfDocumentCreator(String^ json, RichTextBox^ rtb, String^ defaultDate) {
+        m_defaultDate = defaultDate;
+        ParentRichTextBox = rtb;
+        InitializeFromJson(json);
+    }
+
     void RtfDocumentCreator::AddRowToTable(RichTextBox^ richTextBox)
     {
         // Загружаем содержимое richTextBox как документ Aspose.Words
@@ -86,15 +92,12 @@ namespace unsaintedWinAppLib {
         return m_parser;
     }
 
-    void RtfDocumentCreator::ResetResetRtfDocumentCreator(String^ json) {
+    void RtfDocumentCreator::ResetRtfDocumentCreator(String^ json) {
         InitializeFromJson(json);
     }
 
-    void RtfDocumentCreator::ResetResetRtfDocumentCreator(Parser^ parser) {
-        m_parser = parser;
-        CleanParser();
-        GenerateRtfDocument();
-        CleanRtfDoc();
+    void RtfDocumentCreator::ResetRtfDocumentCreator(Parser^ parser) {
+        InitializeFromParser(parser);
     }
 
     void RtfDocumentCreator::InitializeDict(Dictionary<String^, String^>^ dict) {
@@ -102,6 +105,12 @@ namespace unsaintedWinAppLib {
             InitializeFromJson(kvp->Value);
             AnalyzesRtfDict->Add(kvp->Key, m_rtfDocument);
         }
+    }
+
+    void RtfDocumentCreator::ResetRtfDocumentCreator(String^ json, RichTextBox^ rtb, String^ defaultDate) {
+        m_defaultDate = defaultDate;
+        ParentRichTextBox = rtb;
+        InitializeFromJson(json);
     }
 
     Aspose::Words::Tables::Table^ RtfDocumentCreator::FindLastTable(Document^ doc)
@@ -161,7 +170,6 @@ namespace unsaintedWinAppLib {
                 
                 for each (TableRow ^ row in table->children) {
                     int  i = 0;
-                    builder->CurrentParagraph->ParagraphFormat->ClearFormatting();
                     for each (TableCell ^ cell in row->children) {                        
                         auto asposeCell = builder->InsertCell();
                         builder->CurrentParagraph->ParagraphFormat->ClearFormatting();
@@ -203,7 +211,11 @@ namespace unsaintedWinAppLib {
                                 else if (para->type == "dateInput") {
                                     for each (Child ^ child in para->children) {
                                         ChildTextFormatting(child, builder);
-                                        builder->Write(DateTime::Now.AddDays(-12).ToShortDateString());
+                                        if (String::IsNullOrEmpty(m_defaultDate))
+                                            builder->Write(DateTime::Now.AddDays(-12).ToShortDateString());
+                                        else {
+                                            builder->Write(m_defaultDate);
+                                        }
                                         builder->Font->ClearFormatting();
                                     }
                                 }
@@ -234,7 +246,11 @@ namespace unsaintedWinAppLib {
                         if (child->type == "dateInput") {
                             for each (Child ^ small_child in child->children) {
                                 ChildTextFormatting(small_child, builder, child);
-                                builder->Write(DateTime::Now.AddDays(-12).ToShortDateString());
+                                if (String::IsNullOrEmpty(m_defaultDate))
+                                    builder->Write(DateTime::Now.AddDays(-12).ToShortDateString());
+                                else {
+                                    builder->Write(m_defaultDate);
+                                }
                                 builder->Font->ClearFormatting();
                             }
                         }
@@ -534,7 +550,8 @@ namespace unsaintedWinAppLib {
             if (start_index < 0)
                 return;
             m_rtfDocument = m_rtfDocument->Remove(start_index, String(R"(\par}\pard)").Length);            
-        }        
+        }            
+        
     }
 
     void RtfDocumentCreator::RemoveBetween(String^% input, String^ start, String^ end) {

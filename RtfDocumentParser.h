@@ -15,6 +15,7 @@ using namespace System::Threading::Tasks;
 namespace unsaintedWinAppLib {
 	public ref class RtfDocumentParser {
 	public:
+		RtfDocumentParser();
 		RtfDocumentParser(String^ rtfString);
 
 		Parser^ GetParser();

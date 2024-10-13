@@ -1,5 +1,9 @@
 #include "pch.h"
 namespace unsaintedWinAppLib {
+    RtfDocumentParser::RtfDocumentParser()
+    {
+        
+    }
     RtfDocumentParser::RtfDocumentParser(String^ rtfString) {
         array<Byte>^ rtfBytes = Encoding::UTF8->GetBytes(rtfString);
         auto stream = gcnew MemoryStream(rtfBytes);

@@ -13,6 +13,10 @@
 #include "RtfDocumentParser.h"
 #include "SQLiteDbHelper.h"
 #include "Resource.h"
+#include "Locker.h"
+#include "WordHelper.h"
+#include "DoctorsRecords.h"
+#include "FirstList.h"
 
 // Добавьте сюда заголовочные файлы для предварительной компиляции
 

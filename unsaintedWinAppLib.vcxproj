@@ -123,7 +123,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DoctorsRecords.h" />
     <ClInclude Include="Epicris.h" />
+    <ClInclude Include="FirstList.h" />
+    <ClInclude Include="Locker.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -131,10 +134,13 @@
     <ClInclude Include="RtfDocumentHandler.h" />
     <ClInclude Include="RtfDocumentParser.h" />
     <ClInclude Include="SQLiteDbHelper.h" />
+    <ClInclude Include="WordHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="DoctorsRecords.cpp" />
     <ClCompile Include="Epicris.cpp" />
+    <ClCompile Include="FirstList.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -146,6 +152,7 @@
     <ClCompile Include="RtfDocumentHandler.cpp" />
     <ClCompile Include="RtfDocumentParser.cpp" />
     <ClCompile Include="SQLiteDbHelper.cpp" />
+    <ClCompile Include="WordHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
@@ -156,6 +163,9 @@
   <ItemGroup>
     <Reference Include="Aspose.Words">
       <HintPath>..\..\..\projects\unsaintedWinApp\libs\aspose.words.24.9.0\lib\net40\Aspose.Words.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word">
+      <HintPath>..\..\..\projects\unsaintedWinApp\libs\microsoft.office.interop.word.15.0.4797.1004\Microsoft.Office.Interop.Word.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\projects\unsaintedWinApp\libs\Newton.Json\Newtonsoft.Json.dll</HintPath>

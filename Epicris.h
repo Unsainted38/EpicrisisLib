@@ -13,7 +13,7 @@ namespace unsaintedWinAppLib {
 
         bool CheckEpicrisFields();
         void CheckProperty();
-        void AddAnalysisToAnalyzesList(Dictionary<String^, Object^>^ analyzesDict);
+        void AddAnalysisToAnalyzesList(JObject^ analyzesDict);
         void Clear();
 
         // property items
@@ -145,11 +145,11 @@ namespace unsaintedWinAppLib {
                 return anamnesisText;
             }
         }
-        property List<String^>^ AnalyzesList {
-            void set(List<String^>^ value) {
+        property List<JObject^>^ AnalyzesList {
+            void set(List<JObject^>^ value) {
                 analyzesList = value;
             }
-            List<String^>^ get() {
+            List<JObject^>^ get() {
                 return analyzesList;
             }
         }
@@ -209,6 +209,11 @@ namespace unsaintedWinAppLib {
                 return illBeginDate;
             }
         }
+        property String^ AnalyzesListJson {
+            String^ get() {
+                return analyzesListJson;
+            }
+        }
     private:
         int historyNumber;
         String^ historyYear;
@@ -226,7 +231,8 @@ namespace unsaintedWinAppLib {
         String^ complications;
         String^ anamnesisJson;
         String^ anamnesisText;
-        List<String^>^ analyzesList;
+        List<JObject^>^ analyzesList;
+        String^ analyzesListJson;
         String^ additionalData;
         List<String^>^ therapy;
         List<String^>^ doctorsLooked;

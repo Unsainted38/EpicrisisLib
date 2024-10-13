@@ -3,7 +3,7 @@
 namespace unsaintedWinAppLib {
     Epicris::Epicris()
     {
-        analyzesList = gcnew List<String^>();
+        analyzesList = gcnew List<JObject^>();
         doctorsLooked = gcnew List<String^>();
         therapy = gcnew List<String^>();
     }
@@ -17,73 +17,73 @@ namespace unsaintedWinAppLib {
             missingFields += "historyNumber\n";
         }
         if (String::IsNullOrEmpty(historyYear)) {
-            missingFields += "historyYear\n";
+            missingFields += "Номер истории болезни\n";
         }
         if (String::IsNullOrEmpty(name)) {
-            missingFields += "name\n";
+            missingFields += "Имя\n";
         }
         if (String::IsNullOrEmpty(surname)) {
-            missingFields += "surname\n";
+            missingFields += "Фамилия\n";
         }
         if (String::IsNullOrEmpty(patronymic)) {
-            missingFields += "patronymic\n";
+            missingFields += "Отчество\n";
         }
         if (String::IsNullOrEmpty(rank)) {
-            missingFields += "rank\n";
+            missingFields += "Звание\n";
         }
         if (String::IsNullOrEmpty(militaryUnit)) {
-            missingFields += "militaryUnit\n";
+            missingFields += "Войсковая часть\n";
         }
         if (String::IsNullOrEmpty(birthday)) {
-            missingFields += "birthday\n";
+            missingFields += "Дата рождения\n";
         }
         if (String::IsNullOrEmpty(incomeDate)) {
-            missingFields += "incomeDate\n";
+            missingFields += "Дата поступления\n";
         }
         if (String::IsNullOrEmpty(outcomeDate)) {
-            missingFields += "outcomeDate\n";
+            missingFields += "Дата выписки\n";
         }
         if (String::IsNullOrEmpty(mkb)) {
-            missingFields += "mkb\n";
+            missingFields += "МКБ\n";
         }
         if (String::IsNullOrEmpty(diagnosis)) {
-            missingFields += "diagnosis\n";
+            missingFields += "Диагноз\n";
         }
         if (String::IsNullOrEmpty(relatedDiagnosis)) {
-            missingFields += "relatedDiagnosis\n";
+            missingFields += "Сопутствующий диагноз\n";
         }
         if (String::IsNullOrEmpty(complications)) {
-            missingFields += "complications\n";
+            missingFields += "Осложнения\n";
         }
-        if (String::IsNullOrEmpty(anamnesisJson)) {
+        /*if (String::IsNullOrEmpty(anamnesisJson)) {
             missingFields += "anamnesisJson\n";
-        }
+        }*/
         if (String::IsNullOrEmpty(anamnesisText)) {
-            missingFields += "anamnesisText\n";
+            missingFields += "Анамнез\n";
         }
-        if (analyzesList == nullptr || analyzesList->Count == 0) {
-            missingFields += "analyzesList\n";
+        if (String::IsNullOrEmpty(analyzesListJson)) {
+            missingFields += "Анализы\n";
         }
-        if (String::IsNullOrEmpty(additionalData)) {
-            missingFields += "additionalData\n";
-        }
+        /*if (String::IsNullOrEmpty(additionalData)) {
+            missingFields += "Дополнительные данные (лечение и осмотр врачами)\n";
+        }*/
         if (therapy->Count == 0) {
-            missingFields += "therapy\n";
+            missingFields += "Лечение\n";
         }
         if (doctorsLooked->Count == 0) {
-            missingFields += "doctorsLooked\n";
+            missingFields += "Осмотрен\n";
         }
         if (String::IsNullOrEmpty(sideData)) {
-            missingFields += "sideData\n";
+            missingFields += "Дополнительно\n";
         }
         if (String::IsNullOrEmpty(recommendations)) {
-            missingFields += "recommendations\n";
+            missingFields += "Рекомендации\n";
         }
         if (String::IsNullOrEmpty(unworkableList)) {
-            missingFields += "unworkableList\n";
+            missingFields += "Лист нетрудоспособности\n";
         }
         if (String::IsNullOrEmpty(illBeginDate)) {
-            missingFields += "illBeginDate\n";
+            missingFields += "Дата начала болезни\n";
         }
 
         // Если есть незаполненные поля, выводим их в MessageBox
@@ -102,11 +102,11 @@ namespace unsaintedWinAppLib {
 
     }
 
-    void Epicris::AddAnalysisToAnalyzesList(Dictionary<String^, Object^>^ analyzesDict) {
+    void Epicris::AddAnalysisToAnalyzesList(JObject^ analyzes) {
         JsonSerializerSettings^ settings = gcnew JsonSerializerSettings();
-        settings->NullValueHandling = NullValueHandling::Ignore;
-        String^ json = JsonConvert::SerializeObject(analyzesDict, settings);
-        analyzesList->Add(json);
+        settings->NullValueHandling = NullValueHandling::Ignore;        
+        analyzesList->Add(analyzes);
+        analyzesListJson = Newtonsoft::Json::JsonConvert::SerializeObject(analyzesList, settings);
     }
     void Epicris::Clear()
     {
@@ -128,11 +128,12 @@ namespace unsaintedWinAppLib {
         anamnesisText = nullptr;
         analyzesList->Clear();
         additionalData = nullptr;
-        therapy = nullptr;
-        doctorsLooked = nullptr;
+        therapy->Clear();
+        doctorsLooked->Clear();
         sideData = nullptr;
         recommendations = nullptr;
         unworkableList = nullptr;
         illBeginDate = nullptr;
+        analyzesListJson = nullptr;
     }
 }
