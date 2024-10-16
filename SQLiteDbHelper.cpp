@@ -11,8 +11,15 @@ namespace unsaintedWinAppLib {
         tmp_table = table;
         tmp_query = " SELECT DISTINCT " + column +
             " FROM " + table + " WHERE id = " + id;
-
-        return tmp_query;
+        return GetString();
+    }
+    String^ SQLiteDbHelper::SetQueryById(String^ table, String^ column, String^ id)
+    {
+        tmp_column = column;
+        tmp_table = table;
+        tmp_query = " SELECT DISTINCT " + column +
+            " FROM " + table + " WHERE id = " + "'" + id + "'";
+        return GetString();
     }
     // Функция создает строку sql запроса с условием подходящего title таблицы 
     String^ SQLiteDbHelper::SetQueryByTitle(String^ table, String^ column, String^ title)
@@ -20,9 +27,8 @@ namespace unsaintedWinAppLib {
         tmp_column = column;
         tmp_table = table;
         tmp_query = " SELECT DISTINCT " + column +
-            " FROM " + table + " WHERE title = " + title;
-
-        return tmp_query;
+            " FROM " + table + " WHERE title = " + "'" + title + "'";
+        return GetString();
     }
     // Функция 
     String^ SQLiteDbHelper::SetQueryByCondition(String^ table, String^ column, String^ conditionColumn, String^ conditionValue, DataFormat format)
@@ -38,7 +44,7 @@ namespace unsaintedWinAppLib {
         switch (format)
         {
         case DataFormat::JSON:
-            return GetJsonString();
+            return GetString();
             break;
         case DataFormat::String:
 
@@ -67,8 +73,67 @@ namespace unsaintedWinAppLib {
 
         return GetColumnData();
     }
+    List<String^>^ SQLiteDbHelper::SetQueryByCondition(String^ table, String^ column, String^ conditionColumn, String^ conditionValue,
+        String^ sorterColumn, ColumnSort sortOrder)
+    {       
+        if (table == "" || column == "" || conditionColumn == "" || conditionValue == "" || sorterColumn == "") {
+            List<String^>^ result = gcnew List<String^>();
+            result->Add("");
+            return result;
+        }
+        tmp_column = column;
+        tmp_table = table;
+
+        switch (sortOrder) {
+        case ColumnSort::Default:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " WHERE " + conditionColumn + " ORDER BY " + sorterColumn;
+            break;
+        case ColumnSort::ASC:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " WHERE " + conditionColumn + " ORDER BY " + sorterColumn + " ASC ";
+            break;
+        case ColumnSort::DESC:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " WHERE " + conditionColumn + " ORDER BY " + sorterColumn + " DESC ";
+            break;
+        default:
+            break;
+        }
+
+        return GetColumnData();
+    }
+    List<String^>^ SQLiteDbHelper::SetQueryByCondition(String^ table, String^ column, String^ sorterColumn, ColumnSort sortOrder)
+    {
+        if (table == "" || column == "" || sorterColumn == "") {
+            List<String^>^ result = gcnew List<String^>();
+            result->Add("");
+            return result;
+        }
+        tmp_column = column;
+        tmp_table = table;
+
+        switch (sortOrder) {
+        case ColumnSort::Default:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " ORDER BY " + sorterColumn;
+            break;
+        case ColumnSort::ASC:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " ORDER BY " + sorterColumn + " ASC ";
+            break;
+        case ColumnSort::DESC:
+            tmp_query = " SELECT DISTINCT " + column + ", " + sorterColumn +
+                " FROM " + table + " ORDER BY " + sorterColumn + " DESC ";
+            break;
+        default:
+            break;
+        }
+
+        return GetColumnData();
+    }
     // Функция извлекает строку в формате json из таблицы
-    String^ SQLiteDbHelper::GetJsonString()
+    String^ SQLiteDbHelper::GetString()
     {
         SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
         String^ jsonData;
@@ -260,7 +325,35 @@ namespace unsaintedWinAppLib {
     Dictionary<String^, JObject^>^ SQLiteDbHelper::ExtractAnalyzesBlankToDictionary(String^ title)
     {
         Dictionary<String^, JObject^>^ result = gcnew Dictionary<String^, JObject^>();
-        String^ query = "SELECT id, title, position FROM analyzes WHERE title = @title";
+        String^ query = "SELECT id, title, position FROM analyzes WHERE title = '" + title + "'";
+
+        SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
+        try
+        {
+            connection->Open();
+            auto cmd = gcnew SQLiteCommand(query, connection);
+            //cmd->Parameters->AddWithValue("@title", title);
+            SQLiteDataReader^ reader = cmd->ExecuteReader();
+            while (reader->Read()) {
+                result->Add("id", JsonConvert::DeserializeObject<JObject^>(reader["id"]->ToString()));
+                result->Add("title", JsonConvert::DeserializeObject<JObject^>(reader["title"]->ToString()));
+                result->Add("position", JsonConvert::DeserializeObject<JObject^>(reader["position"]->ToString()));
+
+            }
+        }
+        catch (Exception^ e)
+        {
+            Console::WriteLine("Error message: " + e);
+        }
+        finally {
+            connection->Close();
+        }
+        return result;
+    }
+    JObject^ SQLiteDbHelper::ExtractAnalyzesBlank(String^ title)
+    {
+        JObject^ result = gcnew JObject();
+        String^ query = "SELECT id, title, position FROM analyzes WHERE title = '" + title + "'";
 
         SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
         try
@@ -270,10 +363,9 @@ namespace unsaintedWinAppLib {
             cmd->Parameters->AddWithValue("@title", title);
             SQLiteDataReader^ reader = cmd->ExecuteReader();
             while (reader->Read()) {
-                result->Add("id", JsonConvert::DeserializeObject<JObject^>(reader["id"]->ToString()));
-                result->Add("title", JsonConvert::DeserializeObject<JObject^>(reader["title"]->ToString()));
-                result->Add("position", JsonConvert::DeserializeObject<JObject^>(reader["position"]->ToString()));
-
+                result->Add("id", (JToken^)reader["id"]->ToString());
+                result->Add("title", (JToken^)reader["title"]->ToString());
+                result->Add("position", (JToken^)reader["position"]->ToString());
             }
         }
         catch (Exception^ e)
