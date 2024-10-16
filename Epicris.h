@@ -14,6 +14,7 @@ namespace unsaintedWinAppLib {
         bool CheckEpicrisFields();
         void CheckProperty();
         void AddAnalysisToAnalyzesList(JObject^ analyzesDict);
+        void AddAnalysisToAnalyzesList(Dictionary<String^, JObject^>^ analyzes);
         void Clear();
 
         // property items

@@ -105,8 +105,30 @@ namespace unsaintedWinAppLib {
     void Epicris::AddAnalysisToAnalyzesList(JObject^ analyzes) {
         JsonSerializerSettings^ settings = gcnew JsonSerializerSettings();
         settings->NullValueHandling = NullValueHandling::Ignore;        
-        analyzesList->Add(analyzes);
+        List<JObject^>^ jobList = gcnew List<JObject^>();
+        jobList->AddRange(analyzesList);
+        if (jobList->Count == 0)
+            analyzesList->Add(analyzes);
+        bool flag = false;
+        for each (JObject ^ ob in jobList) {
+            if (analyzes->Value<String^>("id") == ob->Value<String^>("id")) {
+                analyzesList->Remove(ob);
+                analyzesList->Add(analyzes);
+                flag = false;
+                break;
+            }
+            else {
+                flag = true;
+            }
+        }
+        if (flag)
+            analyzesList->Add(analyzes);
         analyzesListJson = Newtonsoft::Json::JsonConvert::SerializeObject(analyzesList, settings);
+    }
+    void Epicris::AddAnalysisToAnalyzesList(Dictionary<String^, JObject^>^ analyzes) {
+        JsonSerializerSettings^ settings = gcnew JsonSerializerSettings();
+        settings->NullValueHandling = NullValueHandling::Ignore;
+        analyzesListJson = JsonConvert::SerializeObject(analyzes, settings);
     }
     void Epicris::Clear()
     {
