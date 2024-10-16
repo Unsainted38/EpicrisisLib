@@ -23,17 +23,22 @@ namespace unsaintedWinAppLib {
 	public:
 		WordHelper();
 		WordHelper(String^ templateFilePath, String^ outputDirPath, Epicris^ epicris);
+		WordHelper(String^ templateFilePath, String^ outputDirPath, DoctorsRecords^ docRec);
+		WordHelper(String^ templateFilePath, String^ outputDirPath, FirstList^ firstList);
 		~WordHelper();
 				
 		void OpenTemplate();
 		void CloseTemplate();
 		void SaveTemplate();
-		void InsertEpicrisToTemplate(Epicris^ epicris);
-		void InsertFirstListToTemplate(DoctorsRecords^ docRec);
-		void InsertDoctorsRecords(FirstList^ firstList);
+		void InsertEpicrisToTemplate();
+		void InsertFirstListToTemplate();
+		void InsertDoctorsRecords();
+		
 	private:
 		
-
-		void InsertTable(Word::Document^ doc, Dictionary<String^, Object^>^ json);
+		void InsertTable(Table^ table);
+		void InsertParagraph(Paragraph^ parapraph);
+		void InsertAnalyzes();
+		void InsertTables(Word::Document^ doc, Dictionary<String^, Object^>^ json);
 	};
 }

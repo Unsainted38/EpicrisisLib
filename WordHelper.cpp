@@ -9,6 +9,16 @@ namespace unsaintedWinAppLib {
         m_outputDir = outputDirPath;   
     }
 
+    WordHelper::WordHelper(String^ templateFilePath, String^ outputDirPath, DoctorsRecords^ docRec)
+    {
+        throw gcnew System::NotImplementedException();
+    }
+
+    WordHelper::WordHelper(String^ templateFilePath, String^ outputDirPath, FirstList^ firstList)
+    {
+        throw gcnew System::NotImplementedException();
+    }
+
     WordHelper::~WordHelper()
     {
     }
@@ -26,7 +36,16 @@ namespace unsaintedWinAppLib {
         Object^ newTemplate = false;
         Object^ documentType = Word::WdNewDocumentType::wdNewBlankDocument;
         Object^ visible = true;
-        m_wordDoc = m_wordDocs->Add(m_templateFile, newTemplate, documentType, visible);
+        try
+        {
+            m_wordDoc = m_wordDocs->Add(m_templateFile, newTemplate, documentType, visible);
+        }
+        catch (Exception^ e)
+        {
+            MessageBox::Show("Не удалось открыть файл шаблона!\nПроверьте заданный путь в настройках.\nТекущий путь:\n" + m_templateFile + "\n" + e->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+
+            return;
+        }
         // Открытие исходного шаблона, а нужно новый документ, созданный по шаблону
         //Object^ confirmConversions = true;
         //Object^ readOnly = false;
@@ -62,9 +81,10 @@ namespace unsaintedWinAppLib {
         //    xmlTransform);
     }
     
-    void WordHelper::InsertEpicrisToTemplate(Epicris^ epicris)
+    void WordHelper::InsertEpicrisToTemplate()
     {
-        
+        if (m_wordDoc == nullptr)
+            return;
         Object^ matchCase = true;
         Object^ matchWholeWord = true;
         Object^ matchWildcards = false;
@@ -82,103 +102,103 @@ namespace unsaintedWinAppLib {
         Word::Range^ range = m_wordDoc->Content;
         // Номер истории болезни
         Object^ findText = "{{НомерБолезни}}";
-        Object^ replaceWith = epicris->HistoryNumber;
+        Object^ replaceWith = m_epicris->HistoryNumber;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Год болезни
         findText = "{{ГодБолезни}}";
-        replaceWith = epicris->HistoryYear;
+        replaceWith = m_epicris->HistoryYear;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Имя
         findText = "{{Имя}}";
-        replaceWith = epicris->Name;
+        replaceWith = m_epicris->Name;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike,matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Фамилия
         findText = "{{Фамилия}}";
-        replaceWith = epicris->Surname;
+        replaceWith = m_epicris->Surname;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Отчество
         findText = "{{Отчество}}";
-        replaceWith = epicris->Patronymic;
+        replaceWith = m_epicris->Patronymic;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Дата поступления
         findText = "{{ДатаПоступления}}";
-        replaceWith = epicris->IncomeDate;
+        replaceWith = m_epicris->IncomeDate;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Дата выписки
         findText = "{{ДатаВыписки}}";
-        replaceWith = epicris->OutcomeDate;
+        replaceWith = m_epicris->OutcomeDate;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Дата рождения
         findText = "{{ДатаРождения}}";
-        replaceWith = epicris->Birthday;
+        replaceWith = m_epicris->Birthday;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Звание
         findText = "{{Звание}}";
-        replaceWith = epicris->Rank;
+        replaceWith = m_epicris->Rank;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Номер части
         findText = "{{НомерЧасти}}";
-        replaceWith = epicris->MilitaryUnit;
+        replaceWith = m_epicris->MilitaryUnit;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Основной диагноз
         findText = "{{ОснДиагноз}}";
-        replaceWith = epicris->Diagnosis;
+        replaceWith = m_epicris->Diagnosis;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Осложнения
         findText = "{{Осложнения}}";
-        replaceWith = epicris->Complications;
+        replaceWith = m_epicris->Complications;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Сопутствующие заболевания
         findText = "{{СопутЗабол}}";
-        replaceWith = epicris->RelatedDiagnosis;
+        replaceWith = m_epicris->RelatedDiagnosis;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Анамнез
         findText = "{{Анамнез}}";
-        replaceWith = epicris->AnamnesisText;
+        replaceWith = m_epicris->AnamnesisText;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Лечение
         findText = "{{Лечение}}";       
-        replaceWith = String::Join(", ", epicris->Therapy);
+        replaceWith = String::Join(", ", m_epicris->Therapy);
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Дополнительно
         findText = "{{Дополнительно}}";
-        replaceWith = epicris->SideData;
+        replaceWith = m_epicris->SideData;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);
         // Рекомендации
         findText = "{{Рекомендации}}";
-        replaceWith = epicris->Recommendations;
+        replaceWith = m_epicris->Recommendations;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);      
@@ -193,14 +213,21 @@ namespace unsaintedWinAppLib {
         m_wordApp = nullptr;
     }
 
-    void WordHelper::InsertFirstListToTemplate(DoctorsRecords^ docRec)
+    void WordHelper::InsertFirstListToTemplate()
     {
         throw gcnew System::NotImplementedException();
     }
 
     void WordHelper::SaveTemplate()
     {
-        Object^ fileName = m_outputDir + m_epicris->Surname + " эпикриз " + DateTime::Parse(m_epicris->OutcomeDate).AddDays(-1).ToShortDateString() + ".doc";
+        if (m_wordDoc == nullptr)
+            return;
+        String^ diagnosis;
+        if (m_epicris->Diagnosis->ToLower()->Contains("пневмония"))
+            diagnosis = "пневмония ";
+        else if (m_epicris->Diagnosis->ToLower()->Contains("бронхит"))
+            diagnosis = "бронхит ";
+        Object^ fileName = m_outputDir + "\\" + m_epicris->Surname + " эпикриз " + diagnosis + DateTime::Parse(m_epicris->OutcomeDate).AddDays(-1).ToShortDateString() + ".doc";
         Object^ fileFormat = Word::WdSaveFormat::wdFormatDocument;
         Object^ lockComments = false;
         Object^ password = "";
@@ -220,67 +247,50 @@ namespace unsaintedWinAppLib {
             saveNativePictureFormat,saveFormsData, saveAsAOCELetter, encoding, insertLineBreaks, allowSubstitutions, lineEnding, addBiDiMarks);
     }
 
-    void WordHelper::InsertDoctorsRecords(FirstList^ firstList)
+    void WordHelper::InsertDoctorsRecords()
     {
         throw gcnew System::NotImplementedException();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    void WordHelper::InsertTable(Word::Document^ doc, Dictionary<String^, Object^>^ json) {
+    void WordHelper::InsertTable(Table^ table)
+    {
+        
+    }
+    void WordHelper::InsertParagraph(Paragraph^ parapraph)
+    {
+    }
+    void WordHelper::InsertAnalyzes()
+    {
+    }
+    void WordHelper::InsertTables(Word::Document^ doc, Dictionary<String^, Object^>^ json) {
         // Проверка наличия закладки для вставки таблицы
-        //if (doc->Bookmarks->Exists("TablePlaceholder")) {
-        //    Word::Bookmark^ bookmark;
-        //    
-        //    Word::Range^ range = bookmark->Range;
-        //    
+        if (doc->Bookmarks->Exists("TablePlaceholder")) {
+            Word::Bookmark^ bookmark = m_wordDoc->Bookmarks->default[(Object^%)"Tables"];
+            
+            Word::Range^ range = bookmark->Range;
+            
 
-        //    // Получение данных из JSON
-        //    List<String^>^ columns = safe_cast<List<String^>^>(json["columns"]);
-        //    List<List<Object^>^>^ rows = safe_cast<List<List<Object^>^>^>(json["rows"]);
+            // Получение данных из JSON
+            List<String^>^ columns = safe_cast<List<String^>^>(json["columns"]);
+            List<List<Object^>^>^ rows = safe_cast<List<List<Object^>^>^>(json["rows"]);
 
-        //    // Вставка таблицы
-        //    Word::Table^ table = doc->Tables->Add(range, rows->Count + 1, columns->Count, missing, missing);
-        //    
-        //    //// Заполнение заголовков столбцов
-        //    for (int col = 0; col < columns->Count; ++col) {
-        //        table->Cell(1, col + 1)->Range->Text = columns[col];
-        //    }
-        //    
-        //    //// Заполнение строк данных
-        //    //for (int row = 0; row < rows->Count; ++row) {
-        //    //    for (int col = 0; col < columns->Count; ++col) {
-        //    //        table->Cell(row + 2, col + 1)->Range->Text = rows[row][col]->ToString();
-        //    //    }
-        //    //}
-        //}
-        //else {
-        //    throw gcnew Exception("Bookmark 'TablePlaceholder' not found in the document.");
-        //}
+            // Вставка таблицы
+            Word::Table^ table = doc->Tables->Add(range, rows->Count + 1, columns->Count, missing, missing);
+            
+            //// Заполнение заголовков столбцов
+            for (int col = 0; col < columns->Count; ++col) {
+                table->Cell(1, col + 1)->Range->Text = columns[col];
+            }
+            
+            //// Заполнение строк данных
+            //for (int row = 0; row < rows->Count; ++row) {
+            //    for (int col = 0; col < columns->Count; ++col) {
+            //        table->Cell(row + 2, col + 1)->Range->Text = rows[row][col]->ToString();
+            //    }
+            //}
+        }
+        else {
+            throw gcnew Exception("Bookmark 'TablePlaceholder' not found in the document.");
+        }
     }
     
 
