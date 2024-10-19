@@ -85,6 +85,9 @@ namespace unsaintedWinAppLib {
         if (String::IsNullOrEmpty(illBeginDate)) {
             missingFields += "Дата начала болезни\n";
         }
+        if (String::IsNullOrEmpty(vvk)) {
+            missingFields += "ВВК";
+        }
 
         // Если есть незаполненные поля, выводим их в MessageBox
         if (missingFields != "Следующие поля не заполнены:\n") {
@@ -133,29 +136,30 @@ namespace unsaintedWinAppLib {
     void Epicris::Clear()
     {
         historyNumber++;
-        historyYear = nullptr;
-        name = nullptr;
-        surname = nullptr;
-        patronymic = nullptr;
-        rank = nullptr;
-        militaryUnit = nullptr;
-        birthday = nullptr;
-        incomeDate = nullptr;
-        outcomeDate = nullptr;
-        mkb = nullptr;
-        diagnosis = nullptr;
-        relatedDiagnosis = nullptr;
-        complications = nullptr;
-        anamnesisJson = nullptr;
-        anamnesisText = nullptr;
+        historyYear = String::Empty;
+        name = String::Empty;
+        surname = String::Empty;
+        patronymic = String::Empty;
+        rank = String::Empty;
+        militaryUnit = String::Empty;
+        birthday = String::Empty;
+        incomeDate = String::Empty;
+        outcomeDate = String::Empty;
+        mkb = String::Empty;
+        diagnosis = String::Empty;
+        relatedDiagnosis = String::Empty;
+        complications = String::Empty;
+        anamnesisJson = String::Empty;
+        anamnesisText = String::Empty;
         analyzesList->Clear();
-        additionalData = nullptr;
+        additionalData = String::Empty;
         therapy->Clear();
         doctorsLooked->Clear();
-        sideData = nullptr;
-        recommendations = nullptr;
-        unworkableList = nullptr;
-        illBeginDate = nullptr;
-        analyzesListJson = nullptr;
+        sideData = String::Empty;
+        recommendations = String::Empty;
+        unworkableList = String::Empty;
+        illBeginDate = String::Empty;
+        analyzesListJson = String::Empty;   
+        vvk = String::Empty;
     }
 }

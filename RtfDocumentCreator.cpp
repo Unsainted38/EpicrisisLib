@@ -113,6 +113,191 @@ namespace unsaintedWinAppLib {
         InitializeFromJson(json);
     }
 
+    void RtfDocumentCreator::GenerateParser(String^ jsonString) {
+        Parser^ parser = gcnew Parser();
+        parser->DeserializedItems = gcnew List<Object^>();
+        List<JObject^>^ items = JsonConvert::DeserializeObject<List<JObject^>^>(jsonString);
+
+        for each (JObject ^ item in items) {
+            String^ type;
+            String^ align;
+            if (item->ContainsKey("type"))
+                type = item["type"]->ToString();
+            if (item->ContainsKey("align"))
+                align = item["align"]->ToString();
+            if (type == "paragraph") {
+                Paragraph^ m_paragraph = gcnew Paragraph();
+                List<JObject^>^ children;
+                m_paragraph->type = type;
+                m_paragraph->align = align;
+                if (item->ContainsKey("children")) {
+                    m_paragraph->children = gcnew List<Child^>();
+                    children = JsonConvert::DeserializeObject<List<JObject^>^>(item["children"]->ToString());
+                    for each (JObject ^ child in children) {
+                        Child^ m_child;
+                        if (child->ContainsKey("type")) {
+                            String^ type = child["type"]->ToString();
+                            List<Child^>^ m_children = gcnew List<Child^>();
+                            int parentfontsize = 11;
+                            if (child->ContainsKey("fontSize"))
+                                parentfontsize = child["fontSize"]->ToObject<int>();
+                            children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                            if (type == "dateInput") {
+                                for each (JObject ^ small_child in children) {
+                                    Child^ m_child = GenerateChild(small_child);
+                                    m_child->fontSize = parentfontsize;
+                                    if (small_child->ContainsKey("fontSize"))
+                                        m_child->fontSize = small_child["fontSize"]->ToObject<int>();
+                                    m_children->Add(m_child);
+                                }
+                            }
+                            else if (m_child->type == "paragraph") {
+                                for each (JObject ^ small_child in children) {
+                                    Child^ m_child = GenerateChild(small_child);
+                                    m_child->fontSize = parentfontsize;
+                                    if (small_child->ContainsKey("fontSize"))
+                                        m_child->fontSize = small_child["fontSize"]->ToObject<int>();
+                                    m_children->Add(m_child);
+                                }
+                            }
+                            m_child = GenerateChild(child);
+                            m_child->type = type;
+                            m_child->children = m_children;
+                        }
+                        else {
+                            m_child = GenerateChild(child);
+                        }
+
+                        m_paragraph->children->Add(m_child);
+                    }
+                }
+                parser->DeserializedItems->Add(m_paragraph);
+            }
+            else if (type == "table") {
+                Table^ m_table = gcnew Table();
+                List<JObject^>^ columns;
+                List<JObject^>^ children;
+                if (item->ContainsKey("columns")) {
+                    columns = JsonConvert::DeserializeObject<List<JObject^>^>(item["columns"]->ToString());
+                    m_table->columns = gcnew List<Column^>();
+                    for each (JObject ^ column in columns) {
+                        Column^ m_column = gcnew Column();
+                        String^ type;
+                        String^ title;
+                        if (column->ContainsKey("type"))
+                            type = column["type"]->ToString();
+                        if (column->ContainsKey("title"))
+                            title = column["title"]->ToString();
+                        m_column->title = title;
+                        m_column->type = type;
+                        m_table->columns->Add(m_column);
+                    }
+                }
+                if (item->ContainsKey("children")) {
+                    children = JsonConvert::DeserializeObject<List<JObject^>^>(item["children"]->ToString());
+                    m_table->children = gcnew List<TableRow^>();
+                    for each (JObject ^ child in children) {
+                        String^ type;
+                        List<JObject^>^ children;
+                        TableRow^ m_tableRow = gcnew TableRow();
+                        m_tableRow->children = gcnew List<TableCell^>();
+                        if (child->ContainsKey("type"))
+                            type = child["type"]->ToString();
+                        m_tableRow->type = type;
+
+                        if (type == "tableRow") {
+                            children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+
+                            for each (JObject ^ child in children) {
+                                TableCell^ m_tableCell = gcnew TableCell();
+                                String^ type;
+                                List<JObject^>^ children;
+                                if (child->ContainsKey("type"))
+                                    type = child["type"]->ToString();
+                                m_tableCell->type = type;
+                                if (type == "tableHeaderCell") {
+                                    children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                    m_tableCell->children = gcnew List<Child^>();
+                                    for each (JObject ^ child in children) {
+                                        Child^ m_child = GenerateChild(child);
+                                        m_tableCell->children->Add(m_child);
+                                    }
+                                }
+                                else if (type == "tableDataCell") {
+                                    String^ columnType;
+                                    List<JObject^>^ children;
+                                    m_tableCell->paragraphs = gcnew List<Paragraph^>();
+                                    if (child->ContainsKey("columnType"))
+                                        columnType = child["columnType"]->ToString();
+                                    m_tableCell->columnType = columnType;
+                                    if (columnType == "date") {
+                                        children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                        for each (JObject ^ child in children) {
+                                            String^ type;
+                                            List<JObject^>^ children;
+                                            Paragraph^ m_paragraph = gcnew Paragraph();
+                                            m_paragraph->children = gcnew List<Child^>();
+                                            if (child->ContainsKey("type"))
+                                                type = child["type"]->ToString();
+                                            m_paragraph->type = type;
+                                            if (type == "dateInput") {
+                                                children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                                for each (JObject ^ child in children) {
+                                                    Child^ m_child = GenerateChild(child);
+                                                    m_paragraph->children->Add(m_child);
+                                                }
+                                            }
+                                            else if (type == "paragraph") {
+                                                children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                                for each (JObject ^ child in children) {
+                                                    Child^ m_child = GenerateChild(child);
+                                                    m_paragraph->children->Add(m_child);
+                                                }
+                                            }
+                                            m_tableCell->paragraphs->Add(m_paragraph);
+                                        }
+                                    }
+                                    else if (columnType == "text") {
+                                        children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                        for each (JObject ^ child in children) {
+                                            String^ type;
+                                            List<JObject^>^ children;
+                                            Paragraph^ m_paragraph = gcnew Paragraph();
+                                            m_paragraph->children = gcnew List<Child^>();
+                                            if (child->ContainsKey("type"))
+                                                type = child["type"]->ToString();
+                                            m_paragraph->type = type;
+                                            if (type == "dateInput") {
+                                                children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                                for each (JObject ^ child in children) {
+                                                    Child^ m_child = GenerateChild(child);
+                                                    m_paragraph->children->Add(m_child);
+                                                }
+                                            }
+                                            else if (type == "paragraph") {
+                                                children = JsonConvert::DeserializeObject<List<JObject^>^>(child["children"]->ToString());
+                                                for each (JObject ^ child in children) {
+                                                    Child^ m_child = GenerateChild(child);
+                                                    m_paragraph->children->Add(m_child);
+                                                }
+                                            }
+                                            m_tableCell->paragraphs->Add(m_paragraph);
+                                        }
+
+                                    }
+                                }
+                                m_tableRow->children->Add(m_tableCell);
+                            }
+                        }
+                        m_table->children->Add(m_tableRow);
+                    }
+                }
+                parser->DeserializedItems->Add(m_table);
+            }
+        }
+        m_parser = parser;
+    }
+
     Aspose::Words::Tables::Table^ RtfDocumentCreator::FindLastTable(Document^ doc)
     {
         for each (Section ^ section in doc->Sections)

@@ -211,8 +211,19 @@ namespace unsaintedWinAppLib {
             }
         }
         property String^ AnalyzesListJson {
+            void set(String^ value) {
+                analyzesListJson = value;
+            }
             String^ get() {
                 return analyzesListJson;
+            }
+        }
+        property String^ VVK {
+            void set(String^ value) {
+                vvk = value;
+            }
+            String^ get() {
+                return vvk;
             }
         }
     private:
@@ -241,5 +252,6 @@ namespace unsaintedWinAppLib {
         String^ recommendations;
         String^ unworkableList;
         String^ illBeginDate;
+        String^ vvk;
     };
 }

@@ -59,6 +59,7 @@ namespace unsaintedWinAppLib {
         List<String^>^ GetColumnData();
         List<String^>^ GetColumnData(String^ tableName, String^ columnName);
         List<String^>^ GetSortedColumnData(String^ tableName, String^ columnName, ColumnSort sortOrder);
+        Epicris^ GetEpicris(String^ table, String^ conditionColumn, String^ conditionValue);
 
         Dictionary<String^, String^>^ ExtractColumnsToDictionary(String^ table, String^ keyColumn, String^ valueColumn);
         Dictionary<String^, JObject^>^ ExtractAnalyzesBlankToDictionary(String^ title);

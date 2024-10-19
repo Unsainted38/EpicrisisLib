@@ -42,7 +42,7 @@ namespace unsaintedWinAppLib {
 				return parentRichTextBox;
 			}
 		}
-
+		void GenerateParser(String^ jsonString);
 	private:
 		RichTextBox^ parentRichTextBox;
 		Aspose::Words::Tables::Table^ FindLastTable(Document^ doc);

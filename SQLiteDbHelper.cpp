@@ -293,6 +293,47 @@ namespace unsaintedWinAppLib {
         }
         return results;
     }
+    Epicris^ SQLiteDbHelper::GetEpicris(String^ table, String^ conditionColumn, String^ conditionValue)
+    {
+        Epicris^ epicris = gcnew Epicris();
+        SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
+        String^ query = "SELECT * FROM epicrises WHERE " + conditionColumn + " = " + "'" + conditionValue + "'";
+
+        try
+        {
+            connection->Open();
+            SQLiteCommand^ cmd = gcnew SQLiteCommand(query, connection);
+            SQLiteDataReader^ reader = cmd->ExecuteReader();
+            while (reader->Read()) {
+                epicris->HistoryNumber = Convert::ToInt32(reader["historyNumber"]);
+                epicris->HistoryYear = reader["historyYear"]->ToString();
+                epicris->Surname = reader["surname"]->ToString();
+                epicris->Name = reader["name"]->ToString();
+                epicris->Patronymic = reader["patronymic"]->ToString();
+                epicris->Birthday = reader["birthday"]->ToString();
+                epicris->IncomeDate = reader["incomeDate"]->ToString();
+                epicris->OutcomeDate = reader["outcomeDate"]->ToString();
+                epicris->MilitaryUnit = reader["militaryUnit"]->ToString();
+                epicris->Rank = reader["rank"]->ToString();
+                epicris->Mkb = reader["mkb"]->ToString();
+                epicris->Diagnosis = reader["diagnosis"]->ToString();
+                epicris->RelatedDiagnosis = reader["relatedDiagnosis"]->ToString();
+                epicris->Complications = reader["complications"]->ToString();
+                epicris->AnamnesisText = reader["anamnesisMorbiResult"]->ToString();
+                epicris->AnalyzesListJson = reader["analyzes"]->ToString();
+                epicris->Therapy->AddRange(reader["therapyResult"]->ToString()->Split(gcnew array<String^>{ ", " }, System::StringSplitOptions::RemoveEmptyEntries));
+                epicris->DoctorsLooked->AddRange(reader["doctorsResult"]->ToString()->Split(gcnew array<String^>{ ", " }, System::StringSplitOptions::RemoveEmptyEntries));
+                epicris->AdditionalData = reader["recommendationsResult"]->ToString();
+                epicris->Recommendations = reader["additionalInfoResult"]->ToString();
+                epicris->UnworkableList = reader["nonWorkingPaperContent"]->ToString();
+            }
+        }
+        catch (Exception^ ex)
+        {
+
+        }
+        return epicris;
+    }
     Dictionary<String^, String^>^ SQLiteDbHelper::ExtractColumnsToDictionary(String^ table, String^ keyColumn, String^ valueColumn)
     {
         Dictionary<String^, String^>^ dict = gcnew Dictionary<String^, String^>();
@@ -417,7 +458,7 @@ namespace unsaintedWinAppLib {
     void SQLiteDbHelper::ImportEpicrisToDb(Epicris^ epicris) {
         SQLiteConnection^ connection = gcnew SQLiteConnection(connectionString);
         String^ query = "INSERT INTO epicrises (historyNumber, historyYear, birthday, name, surname, patronymic, militaryUnit, rank, incomeDate, outcomeDate, mkb, diagnosis, relatedDiagnosis, complications, anamnesisMorbiResult, analyzes, therapyResult, doctorsResult, additionalInfoResult, recommendationsResult, NonWorkingPaperContent)" +
-            " VALUES (@HistoryNumber, @HistoryYear, @Birthday, @Name, @Surname, @Patronymic, @MilitaryUnit, @Rank, @IncomeDate, @OutcomeDate, @Mkb, @Diagnosis, @RelatedDiagnosis, @Complications, @AnamnesisResult, @Analyzes, @Therapy, @DoctorsLooked, @SideData, @Recommendations, @UnworkableList)";
+            " VALUES (@HistoryNumber, @HistoryYear, @Birthday, @Name, @Surname, @Patronymic, @MilitaryUnit, @Rank, @IncomeDate, @OutcomeDate, @Mkb, @Diagnosis, @RelatedDiagnosis, @Complications, @AnamnesisResult, @Analyzes, @Therapy, @DoctorsLooked, @SideData, @Recommendations, @UnworkableList)";        
         try
         {
             connection->Open();
@@ -438,8 +479,8 @@ namespace unsaintedWinAppLib {
             cmd->Parameters->AddWithValue("@Complications", epicris->Complications);
             cmd->Parameters->AddWithValue("@AnamnesisResult", epicris->AnamnesisText);
             cmd->Parameters->AddWithValue("@Analyzes", epicris->AnalyzesListJson);
-            cmd->Parameters->AddWithValue("@Therapy", epicris->Therapy);
-            cmd->Parameters->AddWithValue("@DoctorsLooked", epicris->DoctorsLooked);
+            cmd->Parameters->AddWithValue("@Therapy", String::Join(", ", epicris->Therapy));
+            cmd->Parameters->AddWithValue("@DoctorsLooked", String::Join(", ", epicris->DoctorsLooked));
             cmd->Parameters->AddWithValue("@SideData", epicris->SideData);
             cmd->Parameters->AddWithValue("@Recommendations", epicris->Recommendations);
             cmd->Parameters->AddWithValue("@UnworkableList", epicris->UnworkableList);

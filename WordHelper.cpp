@@ -99,109 +99,222 @@ namespace unsaintedWinAppLib {
         Object^ matchAlefHamza = missing;
         Object^ matchControl = missing;
         
-        Word::Range^ range = m_wordDoc->Content;
+        Object^ bmHistoryNum = (Object^)"НомерБолезни";
+        Object^ bmHistoryYear = (Object^)"ГодБолезни";
+        Object^ bmAnamnes = (Object^)"Анамнез";
+        Object^ bmVVK = (Object^)"ВВК";
+        Object^ bmOutcomeDate = (Object^)"ДатаВыписки";
+        Object^ bmIncomeDate = (Object^)"ДатаПоступления";
+        Object^ bmBirthday = (Object^)"ДатаРождения";
+        Object^ bmSideInfo = (Object^)"Дополнительно";
+        Object^ bmRank = (Object^)"Звание";
+        Object^ bmName = (Object^)"Имя";
+        Object^ bmTherapy = (Object^)"Лечение";
+        Object^ bmMilitaryUnit = (Object^)"НомерЧасти";
+        Object^ bmSurgery = (Object^)"Операции";
+        Object^ bmComplications = (Object^)"Осложнения";
+        Object^ bmDiagnosis = (Object^)"ОсновнойДиагноз";
+        Object^ bmPatronymic = (Object^)"Отчество";
+        Object^ bmAnalyzes = (Object^)"РезультатыАнализов";
+        Object^ bmRecommendations = (Object^)"Рекомендации";
+        Object^ bmRelatedDiagnosis = (Object^)"СопутствующиеЗаболевания";
+        Object^ bmSurname = (Object^)"Фамилия";
+
+        Word::Range^ range;
+        Word::Bookmark^ bookmark;
         // Номер истории болезни
-        Object^ findText = "{{НомерБолезни}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmHistoryNum)) {
+            bookmark = m_wordDoc->Bookmarks[bmHistoryNum];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->HistoryNumber);
+        }        
+        /*Object^ findText = "{{НомерБолезни}}";
         Object^ replaceWith = m_epicris->HistoryNumber;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Год болезни
-        findText = "{{ГодБолезни}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmHistoryYear)) {
+            bookmark = m_wordDoc->Bookmarks[bmHistoryYear];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->HistoryYear);
+        }
+        /*findText = "{{ГодБолезни}}";
         replaceWith = m_epicris->HistoryYear;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Имя
-        findText = "{{Имя}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmName)) {
+            bookmark = m_wordDoc->Bookmarks[bmName];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Name);
+        }
+        /*findText = "{{Имя}}";
         replaceWith = m_epicris->Name;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike,matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Фамилия
-        findText = "{{Фамилия}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmSurname)) {
+            bookmark = m_wordDoc->Bookmarks[bmSurname];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Surname);
+        }
+        /*findText = "{{Фамилия}}";
         replaceWith = m_epicris->Surname;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Отчество
-        findText = "{{Отчество}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmPatronymic)) {
+            bookmark = m_wordDoc->Bookmarks[bmPatronymic];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Patronymic);
+        }
+        /*findText = "{{Отчество}}";
         replaceWith = m_epicris->Patronymic;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата поступления
-        findText = "{{ДатаПоступления}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmIncomeDate)) {
+            bookmark = m_wordDoc->Bookmarks[bmIncomeDate];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->IncomeDate);
+        }
+        /*findText = "{{ДатаПоступления}}";
         replaceWith = m_epicris->IncomeDate;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата выписки
-        findText = "{{ДатаВыписки}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmOutcomeDate)) {
+            bookmark = m_wordDoc->Bookmarks[bmOutcomeDate];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->OutcomeDate);
+        }
+        /*findText = "{{ДатаВыписки}}";
         replaceWith = m_epicris->OutcomeDate;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата рождения
-        findText = "{{ДатаРождения}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmBirthday)) {
+            bookmark = m_wordDoc->Bookmarks[bmBirthday];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Birthday);
+        }
+        /*findText = "{{ДатаРождения}}";
         replaceWith = m_epicris->Birthday;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Звание
-        findText = "{{Звание}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmRank)) {
+            bookmark = m_wordDoc->Bookmarks[bmRank];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Rank);
+        }
+        /*findText = "{{Звание}}";
         replaceWith = m_epicris->Rank;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Номер части
-        findText = "{{НомерЧасти}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmMilitaryUnit)) {
+            bookmark = m_wordDoc->Bookmarks[bmMilitaryUnit];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->MilitaryUnit);
+        }
+        /*findText = "{{НомерЧасти}}";
         replaceWith = m_epicris->MilitaryUnit;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Основной диагноз
-        findText = "{{ОснДиагноз}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmDiagnosis)) {
+            bookmark = m_wordDoc->Bookmarks[bmDiagnosis];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Diagnosis);
+        }
+        /*findText = "{{ОснДиагноз}}";
         replaceWith = m_epicris->Diagnosis;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Осложнения
-        findText = "{{Осложнения}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmComplications)) {
+            bookmark = m_wordDoc->Bookmarks[bmComplications];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Complications);
+        }
+        /*findText = "{{Осложнения}}";
         replaceWith = m_epicris->Complications;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Сопутствующие заболевания
-        findText = "{{СопутЗабол}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmRelatedDiagnosis)) {
+            bookmark = m_wordDoc->Bookmarks[bmRelatedDiagnosis];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->RelatedDiagnosis);
+        }
+        /*findText = "{{СопутЗабол}}";
         replaceWith = m_epicris->RelatedDiagnosis;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Анамнез
-        findText = "{{Анамнез}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmAnamnes)) {
+            bookmark = m_wordDoc->Bookmarks[bmAnamnes];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->AnamnesisText);
+        }
+        /*findText = "{{Анамнез}}";
         replaceWith = m_epicris->AnamnesisText;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Лечение
-        findText = "{{Лечение}}";       
+        if (m_wordDoc->Bookmarks->Exists((String^)bmTherapy)) {
+            bookmark = m_wordDoc->Bookmarks[bmTherapy];
+            range = bookmark->Range;
+            range->Text = String::Join(", ", m_epicris->Therapy);
+        }
+        /*findText = "{{Лечение}}";       
         replaceWith = String::Join(", ", m_epicris->Therapy);
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дополнительно
-        findText = "{{Дополнительно}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmSideInfo)) {
+            bookmark = m_wordDoc->Bookmarks[bmSideInfo];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->SideData);
+        }
+        /*findText = "{{Дополнительно}}";
         replaceWith = m_epicris->SideData;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Рекомендации
-        findText = "{{Рекомендации}}";
+        if (m_wordDoc->Bookmarks->Exists((String^)bmRecommendations)) {
+            bookmark = m_wordDoc->Bookmarks[bmRecommendations];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->Recommendations);
+        }
+        /*findText = "{{Рекомендации}}";
         replaceWith = m_epicris->Recommendations;
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);      
+            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/ 
+        // ВВК
+        if (m_wordDoc->Bookmarks->Exists((String^)bmVVK)) {
+            bookmark = m_wordDoc->Bookmarks[bmVVK];
+            range = bookmark->Range;
+            range->Text = Convert::ToString(m_epicris->VVK);
+        }
     }
 
     void WordHelper::CloseTemplate()
@@ -251,47 +364,157 @@ namespace unsaintedWinAppLib {
     {
         throw gcnew System::NotImplementedException();
     }
-    void WordHelper::InsertTable(Table^ table)
-    {
-        
-    }
-    void WordHelper::InsertParagraph(Paragraph^ parapraph)
-    {
-    }
-    void WordHelper::InsertAnalyzes()
-    {
-    }
-    void WordHelper::InsertTables(Word::Document^ doc, Dictionary<String^, Object^>^ json) {
-        // Проверка наличия закладки для вставки таблицы
-        if (doc->Bookmarks->Exists("TablePlaceholder")) {
-            Word::Bookmark^ bookmark = m_wordDoc->Bookmarks->default[(Object^%)"Tables"];
-            
-            Word::Range^ range = bookmark->Range;
-            
-
-            // Получение данных из JSON
-            List<String^>^ columns = safe_cast<List<String^>^>(json["columns"]);
-            List<List<Object^>^>^ rows = safe_cast<List<List<Object^>^>^>(json["rows"]);
-
-            // Вставка таблицы
-            Word::Table^ table = doc->Tables->Add(range, rows->Count + 1, columns->Count, missing, missing);
-            
-            //// Заполнение заголовков столбцов
-            for (int col = 0; col < columns->Count; ++col) {
-                table->Cell(1, col + 1)->Range->Text = columns[col];
+    void WordHelper::InsertTable(Table^ table, Word::Range^% range) {
+        int numRows = table->children->Count;
+        int numColumns = table->columns->Count;
+        Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
+        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
+        Word::Table^ wordTable = m_wordDoc->Tables->Add(range, numRows, numColumns, defaultTableBehavior, autoFitBehavior);
+        int i = 1;
+        for each (TableRow ^ row in table->children) {
+            int j = 1;
+            for each(TableCell^ cell in row->children) {
+                if (cell->paragraphs != nullptr) {
+                    for each (Paragraph ^ para in cell->paragraphs) {
+                        for each (Child ^ child in para->children) {
+                            Word::Cell^ wordCell = wordTable->Cell(i, j);
+                            wordCell->VerticalAlignment = Word::WdCellVerticalAlignment::wdCellAlignVerticalCenter;
+                            wordCell->Range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
+                            wordCell->TopPadding = 1;
+                            wordCell->RightPadding = 1;
+                            wordCell->BottomPadding = 1;
+                            wordCell->LeftPadding = 1;
+                            GetChildFormatting(wordCell, child);
+                        }
+                    }
+                }
+                else {
+                    for each (Child ^ child in cell->children) {
+                        Word::Cell^ wordCell = wordTable->Cell(i, j);
+                        wordCell->VerticalAlignment = Word::WdCellVerticalAlignment::wdCellAlignVerticalCenter;
+                        wordCell->Range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
+                        wordCell->TopPadding = 1;
+                        wordCell->RightPadding = 1;
+                        wordCell->BottomPadding = 1;
+                        wordCell->LeftPadding = 1;
+                        GetChildFormatting(wordCell, child);
+                    }
+                }
+                j++;
             }
-            
-            //// Заполнение строк данных
-            //for (int row = 0; row < rows->Count; ++row) {
-            //    for (int col = 0; col < columns->Count; ++col) {
-            //        table->Cell(row + 2, col + 1)->Range->Text = rows[row][col]->ToString();
-            //    }
-            //}
-        }
-        else {
-            throw gcnew Exception("Bookmark 'TablePlaceholder' not found in the document.");
+            i++;
         }
     }
+    Word::Range^ WordHelper::GetChildFormatting(Word::Cell^ cell, Child^ child) {
+        Word::Range^ range = cell->Range;        
+        if (child->bold.HasValue)           
+            range->Bold = Convert::ToInt32(child->bold.Value);
+        if (child->underline.HasValue)
+            if (child->underline.Value)
+                range->Underline = Word::WdUnderline::wdUnderlineSingle;
+        range->Font->Size = (float)child->fontSize.Value;
+        range->Text = child->text;
+        return range;
+    }
+    Word::Range^ WordHelper::GetChildFormatting(Word::Range^% range, Child^ child) {
+        if (child->bold.HasValue)
+            range->Bold = Convert::ToInt32(child->bold.Value);
+        if (child->underline.HasValue)
+            if (child->underline.Value)
+                range->Underline = Word::WdUnderline::wdUnderlineSingle;
+        range->Font->Size = (float)child->fontSize.Value;
+        range->Text = child->text;
+        return range;
+    }
+    void WordHelper::InsertParagraph(Paragraph^ paragraph, Word::Range^% range) {
+        if (paragraph->align == "center")
+            range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
+        if (paragraph->align == "right")
+            range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphRight;
+        if (paragraph->align == "left")
+            range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphLeft;
+        if (paragraph->align == "justify")
+            range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphJustify;
+        for each (Child ^ child in paragraph->children) {
+            range = GetChildFormatting(range, child);
+        }
+    }
+    void WordHelper::InsertAnalyzes() {
+        Word::Application^ wordApp = gcnew Word::ApplicationClass();
+        wordApp->Visible = true;
+        Object^ newTemplate = false;
+        Object^ documentType = Word::WdNewDocumentType::wdNewBlankDocument;
+        Object^ visible = true;
+        Object^ filePath = R"(C:\Users\user\Desktop\newdoc.docx)";
+        Word::Document^ doc = wordApp->Documents->Add(filePath, newTemplate, documentType, visible);
+        Object^ begin = (Object^)0;
+        Object^ end = (Object^)0;
+        Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
+        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
+        List<JObject^>^ items = JsonConvert::DeserializeObject<List<JObject^>^>(m_epicris->AnalyzesListJson);       
+        SortedList<int, JToken^>^ sortedItems = gcnew SortedList<int, JToken^>();        
+        Dictionary<int, JToken^>^ dict = gcnew Dictionary<int, JToken^>();
+        for each (JObject ^ item in items) {
+            dict->Add(Convert::ToInt32(item["position"]), item["value"]);
+        }
+        sortedItems = gcnew SortedList<int, JToken^>(dict,nullptr);
+        
+        /*for each (Object ^ item in parser->DeserializedItems) {
+            if (dynamic_cast<Paragraph^>(item)) {
+                InsertParagraph((Paragraph^)item);
+            }
+            else if (dynamic_cast<Table^>(item)) {
+                InsertTable((Table^));
+            }
+        }*/
+    }
+    void WordHelper::InsertAnalyzes(String^ analyzes) {
+        Word::Application^ wordApp = gcnew Word::ApplicationClass();
+        wordApp->Visible = true;
+        Object^ newTemplate = false;
+        Object^ documentType = Word::WdNewDocumentType::wdNewBlankDocument;
+        Object^ visible = true;
+        Object^ filePath = R"(C:\Users\user\Desktop\newdoc.docx)";
+        m_wordDoc = wordApp->Documents->Add(filePath, newTemplate, documentType, visible);
+        Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
+        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
+        List<JObject^>^ items = JsonConvert::DeserializeObject<List<JObject^>^>(analyzes);
+        SortedList<int, JToken^>^ sortedItems = gcnew SortedList<int, JToken^>();
+        Dictionary<int, JToken^>^ dict = gcnew Dictionary<int, JToken^>();
+        for each (JObject ^ item in items) {
+            dict->Add(Convert::ToInt32(item["position"]), item["value"]);
+        }
+        sortedItems = gcnew SortedList<int, JToken^>(dict, nullptr);
+        List<JToken^>^ sortedList = gcnew List<JToken^>();
+        for each (JToken ^ token in sortedItems->Values) {
+            for each (JToken ^ item in token) {
+                sortedList->Add(item);
+            }
+        }
+        String^ json = JsonConvert::SerializeObject(sortedList);
+        RtfDocumentCreator^ rtfCreator = gcnew RtfDocumentCreator();
+        rtfCreator->GenerateParser(json);
+        Parser^ parser = rtfCreator->GetParser();
+        Object^ bmAnalyzes = (Object^)"Анализы";
+        if (!m_wordDoc->Bookmarks->Exists((String^)bmAnalyzes))
+            return;
+        Word::Bookmark^ bookmark = m_wordDoc->Bookmarks->default[bmAnalyzes];
+        Word::Range^ range = bookmark->Range;
+        for each (Object ^ item in parser->DeserializedItems) {
+            if (dynamic_cast<Paragraph^>(item)) {
+                InsertParagraph((Paragraph^)item, range);
+                range->InsertParagraphAfter();
+                range = range->Paragraphs->Last->Range;
+            }
+            else if (dynamic_cast<Table^>(item)) {
+                InsertTable((Table^)item, range);
+                range->InsertParagraphAfter();
+                range = range->Tables->default[range->Tables->Count]->Range;
+                
+            }
+        }
+    }
+    
     
 
 };
