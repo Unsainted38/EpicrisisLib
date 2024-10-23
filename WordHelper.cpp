@@ -1,5 +1,12 @@
 #include "pch.h"
 
+//
+//  TODO
+// Сделать отсеивание пустых столбцов таблиц
+// Сделать запись в строку таблицы из массива
+// Сделать сортировку json по значению ключа
+//
+
 namespace unsaintedWinAppLib {
     
     WordHelper::WordHelper(String^ templateFilePath, String^ outputDirPath, Epicris^ epicris)
@@ -276,6 +283,10 @@ namespace unsaintedWinAppLib {
         range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
             matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
             matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
+        // Анализы
+        if (m_wordDoc->Bookmarks->Exists((String^)bmAnalyzes)) {
+            InsertAnalyzes(bmAnalyzes);
+        }
         // Лечение
         if (m_wordDoc->Bookmarks->Exists((String^)bmTherapy)) {
             bookmark = m_wordDoc->Bookmarks[bmTherapy];
@@ -365,38 +376,45 @@ namespace unsaintedWinAppLib {
         throw gcnew System::NotImplementedException();
     }
     void WordHelper::InsertTable(Table^ table, Word::Range^% range) {
+        table = DeleteEmptyColumns(table);
         int numRows = table->children->Count;
         int numColumns = table->columns->Count;
         Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
         Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
+        //range->ParagraphFormat->LeftIndent = range->PageSetup->LeftMargin / 28.3465f;
         Word::Table^ wordTable = m_wordDoc->Tables->Add(range, numRows, numColumns, defaultTableBehavior, autoFitBehavior);
+        wordTable->Range->Cells->VerticalAlignment = Word::WdCellVerticalAlignment::wdCellAlignVerticalCenter;
+        //wordTable->Range->Cells->AutoFit();
+        wordTable->BottomPadding = 0;
+        wordTable->LeftPadding = 1;
+        wordTable->TopPadding = 0;
+        wordTable->RightPadding = 1;
+        wordTable->Range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
         int i = 1;
         for each (TableRow ^ row in table->children) {
-            int j = 1;
+            int j = 1;            
             for each(TableCell^ cell in row->children) {
+                Word::Cell^ wordCell = wordTable->Cell(i, j);
+                Word::Range^ CellRange = wordCell->Range;
+                /*wordCell->TopPadding = 0;
+                wordCell->RightPadding = 1;
+                wordCell->BottomPadding = 0;
+                wordCell->LeftPadding = 1;*/
                 if (cell->paragraphs != nullptr) {
-                    for each (Paragraph ^ para in cell->paragraphs) {
-                        for each (Child ^ child in para->children) {
-                            Word::Cell^ wordCell = wordTable->Cell(i, j);
-                            wordCell->VerticalAlignment = Word::WdCellVerticalAlignment::wdCellAlignVerticalCenter;
-                            wordCell->Range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
-                            wordCell->TopPadding = 1;
-                            wordCell->RightPadding = 1;
-                            wordCell->BottomPadding = 1;
-                            wordCell->LeftPadding = 1;
-                            GetChildFormatting(wordCell, child);
+                    int paraCount = 1;
+                    for each (Paragraph ^ para in cell->paragraphs) {                        
+                        Word::Paragraph^ wordPara = CellRange->Paragraphs[paraCount];
+                        Word::Range^ paraRange = wordPara->Range;
+                        for each (Child ^ child in para->children) {                                                        
+                            GetChildFormatting(paraRange, child);
                         }
+                        if (paraCount != 1)
+                            CellRange->InsertParagraphAfter();
+                        paraCount++;
                     }
                 }
                 else {
                     for each (Child ^ child in cell->children) {
-                        Word::Cell^ wordCell = wordTable->Cell(i, j);
-                        wordCell->VerticalAlignment = Word::WdCellVerticalAlignment::wdCellAlignVerticalCenter;
-                        wordCell->Range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
-                        wordCell->TopPadding = 1;
-                        wordCell->RightPadding = 1;
-                        wordCell->BottomPadding = 1;
-                        wordCell->LeftPadding = 1;
                         GetChildFormatting(wordCell, child);
                     }
                 }
@@ -404,72 +422,150 @@ namespace unsaintedWinAppLib {
             }
             i++;
         }
+        range->SetRange(wordTable->Range->End, wordTable->Range->End);
+        /*range = wordTable->Range;
+        range->InsertParagraphAfter();        
+        Object^ unit = Word::WdUnits::wdParagraph;
+        Object^ count = 1;
+        range = range->Next(unit, count);*/
     }
     Word::Range^ WordHelper::GetChildFormatting(Word::Cell^ cell, Child^ child) {
-        Word::Range^ range = cell->Range;        
+        Word::Range^ range = cell->Range;
+        range->InsertAfter(child->text);
         if (child->bold.HasValue)           
-            range->Bold = Convert::ToInt32(child->bold.Value);
+            range->Bold = child->bold ? 1 : 0;
+        else
+            range->Font->Bold = 0;
         if (child->underline.HasValue)
-            if (child->underline.Value)
-                range->Underline = Word::WdUnderline::wdUnderlineSingle;
+            range->Underline = child->underline ? Word::WdUnderline::wdUnderlineSingle : Word::WdUnderline::wdUnderlineNone;
+        else
+            range->Font->Underline = Word::WdUnderline::wdUnderlineNone;
         range->Font->Size = (float)child->fontSize.Value;
-        range->Text = child->text;
+        Object^ collapseDirection = Word::WdCollapseDirection::wdCollapseEnd;
+        range->Collapse(collapseDirection);
         return range;
     }
-    Word::Range^ WordHelper::GetChildFormatting(Word::Range^% range, Child^ child) {
+    Word::Range^ WordHelper::GetChildFormatting(Word::Range^ %range, Child^ child) {
+        range->InsertAfter(child->text);
         if (child->bold.HasValue)
-            range->Bold = Convert::ToInt32(child->bold.Value);
+            range->Font->Bold = child->bold ? 1 : 0;
+        else
+            range->Font->Bold = 0;
         if (child->underline.HasValue)
-            if (child->underline.Value)
-                range->Underline = Word::WdUnderline::wdUnderlineSingle;
+            range->Font->Underline = child->underline ? Word::WdUnderline::wdUnderlineSingle : Word::WdUnderline::wdUnderlineNone;
+        else
+            range->Font->Underline = Word::WdUnderline::wdUnderlineNone;
         range->Font->Size = (float)child->fontSize.Value;
-        range->Text = child->text;
+        Object^ collapseDirection = Word::WdCollapseDirection::wdCollapseEnd;
+        range->Collapse(collapseDirection);
         return range;
+    }
+    Table^ WordHelper::DeleteEmptyColumns(Table^ table)
+    {
+        if (table->columns->Count == 0 || table->children->Count == 0)
+            return table;
+
+        // Индексы колонок, которые нужно удалить
+        List<int>^ emptyColumnIndices = gcnew List<int>();
+
+        // Проходим по каждому столбцу
+        for (int col = 0; col < table->columns->Count; col++)
+        {
+            bool isEmpty = true;
+
+            // Проходим по каждой строке, начиная со второй (индекс 1)
+            for (int row = 1; row < table->children->Count; row++)
+            {
+                TableRow^ tableRow = table->children[row];
+                TableCell^ cell = tableRow->children[col];
+
+                // Проверяем, есть ли текст в ячейке
+                if (cell->paragraphs->Count > 0)
+                {
+                    for each (Paragraph ^ paragraph in cell->paragraphs)
+                    {
+                        if (paragraph->children->Count > 0)
+                        {                           
+                            for each (Child ^ child in paragraph->children) {
+                                if (!String::IsNullOrEmpty(child->text)) {
+                                    isEmpty = false;
+                                    break;
+                                }
+                            }
+                            if (!isEmpty)
+                                break;
+                        }
+                    }
+                }
+                else {
+                    for each (Child ^ child in cell->children) {
+                        if (!String::IsNullOrEmpty(child->text)) {
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isEmpty)
+                    break; // Прекращаем проверку если нашли текст в ячейке
+            }
+
+            // Если столбец пустой, добавляем его индекс в список для удаления
+            if (isEmpty)
+            {
+                emptyColumnIndices->Add(col);
+            }
+        }
+
+        // Удаляем пустые столбцы, начиная с конца, чтобы не нарушить индексы
+        for (int i = emptyColumnIndices->Count - 1; i >= 0; i--)
+        {
+            int colIndex = emptyColumnIndices[i];
+
+            // Удаляем колонку
+            table->columns->RemoveAt(colIndex);
+
+            // Удаляем соответствующие ячейки в каждой строке
+            for each (TableRow ^ row in table->children)
+            {
+                row->children->RemoveAt(colIndex);
+            }
+        }
+        return table;
     }
     void WordHelper::InsertParagraph(Paragraph^ paragraph, Word::Range^% range) {
+        //range->ParagraphFormat->LeftIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
+        //range->ParagraphFormat->FirstLineIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
         if (paragraph->align == "center")
             range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphCenter;
-        if (paragraph->align == "right")
+        else if (paragraph->align == "right")
             range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphRight;
-        if (paragraph->align == "left")
+        else if (paragraph->align == "left")
             range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphLeft;
-        if (paragraph->align == "justify")
+        else if (paragraph->align == "justify")
             range->ParagraphFormat->Alignment = Word::WdParagraphAlignment::wdAlignParagraphJustify;
+        bool flag = false;
         for each (Child ^ child in paragraph->children) {
             range = GetChildFormatting(range, child);
+            if (child->text->Contains("С-реактивный белок"))
+                flag = true;
         }
+        if (flag) {
+            range->SetRange(range->End, range->End);
+            range->InsertAfter(" ");
+            flag = false;
+            return;
+        }            
+        range->InsertParagraphAfter();
+        range->SetRange(range->End, range->End);
+        //range->ParagraphFormat->LeftIndent = range->PageSetup->LeftMargin / 28.3465f;
+        /*range->InsertParagraphAfter();
+        Object^ unit = Word::WdUnits::wdParagraph;
+        Object^ count = 1;
+        range = range->Next(unit, count); */
     }
-    void WordHelper::InsertAnalyzes() {
-        Word::Application^ wordApp = gcnew Word::ApplicationClass();
-        wordApp->Visible = true;
-        Object^ newTemplate = false;
-        Object^ documentType = Word::WdNewDocumentType::wdNewBlankDocument;
-        Object^ visible = true;
-        Object^ filePath = R"(C:\Users\user\Desktop\newdoc.docx)";
-        Word::Document^ doc = wordApp->Documents->Add(filePath, newTemplate, documentType, visible);
-        Object^ begin = (Object^)0;
-        Object^ end = (Object^)0;
-        Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
-        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
-        List<JObject^>^ items = JsonConvert::DeserializeObject<List<JObject^>^>(m_epicris->AnalyzesListJson);       
-        SortedList<int, JToken^>^ sortedItems = gcnew SortedList<int, JToken^>();        
-        Dictionary<int, JToken^>^ dict = gcnew Dictionary<int, JToken^>();
-        for each (JObject ^ item in items) {
-            dict->Add(Convert::ToInt32(item["position"]), item["value"]);
-        }
-        sortedItems = gcnew SortedList<int, JToken^>(dict,nullptr);
-        
-        /*for each (Object ^ item in parser->DeserializedItems) {
-            if (dynamic_cast<Paragraph^>(item)) {
-                InsertParagraph((Paragraph^)item);
-            }
-            else if (dynamic_cast<Table^>(item)) {
-                InsertTable((Table^));
-            }
-        }*/
-    }
-    void WordHelper::InsertAnalyzes(String^ analyzes) {
-        Word::Application^ wordApp = gcnew Word::ApplicationClass();
+    void WordHelper::InsertAnalyzes(Object^ bmAnalyzes) {
+        /*Word::Application^ wordApp = gcnew Word::ApplicationClass();
         wordApp->Visible = true;
         Object^ newTemplate = false;
         Object^ documentType = Word::WdNewDocumentType::wdNewBlankDocument;
@@ -477,7 +573,9 @@ namespace unsaintedWinAppLib {
         Object^ filePath = R"(C:\Users\user\Desktop\newdoc.docx)";
         m_wordDoc = wordApp->Documents->Add(filePath, newTemplate, documentType, visible);
         Object^ defaultTableBehavior = Word::WdDefaultTableBehavior::wdWord9TableBehavior;
-        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;
+        Object^ autoFitBehavior = Word::WdAutoFitBehavior::wdAutoFitWindow;*/
+        // убогая сортировка json по значению position
+        String^ analyzes = m_epicris->AnalyzesListJson;
         List<JObject^>^ items = JsonConvert::DeserializeObject<List<JObject^>^>(analyzes);
         SortedList<int, JToken^>^ sortedItems = gcnew SortedList<int, JToken^>();
         Dictionary<int, JToken^>^ dict = gcnew Dictionary<int, JToken^>();
@@ -495,24 +593,22 @@ namespace unsaintedWinAppLib {
         RtfDocumentCreator^ rtfCreator = gcnew RtfDocumentCreator();
         rtfCreator->GenerateParser(json);
         Parser^ parser = rtfCreator->GetParser();
-        Object^ bmAnalyzes = (Object^)"Анализы";
         if (!m_wordDoc->Bookmarks->Exists((String^)bmAnalyzes))
             return;
         Word::Bookmark^ bookmark = m_wordDoc->Bookmarks->default[bmAnalyzes];
         Word::Range^ range = bookmark->Range;
+        //range->ParagraphFormat->LeftIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
+        //range->ParagraphFormat->FirstLineIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
+        m_wordApp->ScreenUpdating = false;
         for each (Object ^ item in parser->DeserializedItems) {
             if (dynamic_cast<Paragraph^>(item)) {
                 InsertParagraph((Paragraph^)item, range);
-                range->InsertParagraphAfter();
-                range = range->Paragraphs->Last->Range;
             }
             else if (dynamic_cast<Table^>(item)) {
-                InsertTable((Table^)item, range);
-                range->InsertParagraphAfter();
-                range = range->Tables->default[range->Tables->Count]->Range;
-                
+                InsertTable((Table^)item, range);                
             }
         }
+        m_wordApp->ScreenUpdating = true;
     }
     
     

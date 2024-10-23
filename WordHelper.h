@@ -60,13 +60,14 @@ namespace unsaintedWinAppLib {
 		void InsertEpicrisToTemplate();
 		void InsertFirstListToTemplate();
 		void InsertDoctorsRecords();
-		void InsertTable(Table^ table, Word::Range^ %range);
-		void InsertAnalyzes(String^ analyzes);
+		
 	private:
 		
 		Word::Range^ GetChildFormatting(Word::Cell^ cell, Child^ child);		
-		Word::Range^ GetChildFormatting(Word::Range^% para, Child^ child);
+		Word::Range^ GetChildFormatting(Word::Range^% range, Child^ child);
+		Table^ DeleteEmptyColumns(Table^ table);
 		void InsertParagraph(Paragraph^ paragraph, Word::Range^ %range);
-		void InsertAnalyzes();		
+		void InsertTable(Table^ table, Word::Range^% range);
+		void InsertAnalyzes(Object^ bmAnalyzes);
 	};
 }
