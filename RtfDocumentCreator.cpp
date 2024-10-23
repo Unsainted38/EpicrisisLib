@@ -760,7 +760,33 @@ namespace unsaintedWinAppLib {
 
         // Удаляем всё от start до end включительно
         input = input->Remove(startIndex, (endIndex + end->Length) - startIndex);
-    }    
+    }
+
+    void RtfDocumentCreator::SortJsonByPosition(String^ json)
+    {
+        // Парсим JSON строку в JArray (массив JSON объектов)
+        JArray^ jsonArray = JArray::Parse(json);
+
+        // Сортируем JArray по значению ключа "position"
+        List<JToken^>^ sortedList = gcnew List<JToken^>();
+        for each (JToken ^ token in jsonArray)
+        {
+            sortedList->Add(token);
+        }
+
+        // Используем лямбда-функцию для сортировки по ключу "position"
+        /*sortedList->Sort(gcnew Comparison<JToken^>(
+            [](JToken^ a, JToken^ b) {
+                return (int)a->Value<int>("position") - (int)b->Value<int>("position");
+            }
+        ));*/
+
+        // Преобразуем отсортированный список обратно в JArray
+        JArray^ sortedJsonArray = gcnew JArray(sortedList);
+
+        // Сериализуем JArray обратно в строку
+        String^ sortedJsonString = sortedJsonArray->ToString();
+    }
 
     Dictionary<String^, int>^ RtfDocumentCreator::CalculateColumnsWidths(List<Column^>^ columns, int TotalWidth) {
         Dictionary<String^, int>^ widths = gcnew Dictionary<String^, int>();

@@ -54,6 +54,7 @@ namespace unsaintedWinAppLib {
 		void ChildTextFormatting(Child^ child, DocumentBuilder^% builder, Child^ parent);
 		void CleanRtfDoc();
 		void RemoveBetween(String^% input, String^ start, String^ end);
+		void SortJsonByPosition(String^ json);
 
 		void CleanParser();
 		void GenerateParser();
