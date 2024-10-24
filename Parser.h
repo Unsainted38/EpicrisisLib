@@ -160,7 +160,14 @@ namespace unsaintedWinAppLib {
                 return Type;
             }
         }
-        property String^ columnType;
+        property String^ columnType {
+            void set(String^ value) {
+                Columntype = value;
+            }
+            String^ get() {
+                return Columntype;
+            }
+        };
         property List<Paragraph^>^ paragraphs {
             void set(List<Paragraph^>^ value) {
                 Paragraphs = value;
