@@ -360,7 +360,7 @@ namespace unsaintedWinAppLib {
     Word::Range^ WordHelper::GetChildFormatting(Word::Cell^ cell, Child^ child) {
         Word::Range^ range = cell->Range;
         range->InsertAfter(child->text);
-        if (child->bold.HasValue)           
+        if (child->bold.HasValue)   
             range->Bold = child->bold ? 1 : 0;
         else
             range->Font->Bold = 0;
@@ -479,8 +479,8 @@ namespace unsaintedWinAppLib {
                 flag = true;
         }
         if (flag) {
-            range->SetRange(range->End, range->End);
             range->InsertAfter(" ");
+            range->SetRange(range->End, range->End);            
             flag = false;
             return;
         }            
