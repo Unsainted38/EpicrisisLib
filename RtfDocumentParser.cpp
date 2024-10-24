@@ -1,4 +1,5 @@
 #include "pch.h"
+
 namespace unsaintedWinAppLib {
     RtfDocumentParser::RtfDocumentParser()
     {
@@ -60,7 +61,8 @@ namespace unsaintedWinAppLib {
                     parsed_column->title = cellText;
                     if (cellText->ToLower()->Contains("дата")) {
                         parsed_column->type = "date";
-                        DateTime::TryParse(cellText, dateValue);
+                        DateTime::TryParseExact(cellText, gcnew String("dd.mm.yyyy"), gcnew System::Globalization::DateTimeFormatInfo(),
+                            System::Globalization::DateTimeStyles::None, dateValue);
                         for each (Run ^ run in cell->GetChildNodes(NodeType::Run, true)) {
                             Child^ child = gcnew Child();
                             if (run->Font->Bold)
@@ -103,7 +105,8 @@ namespace unsaintedWinAppLib {
                     Paragraph^ parsed_parapraph = gcnew Paragraph();
                     String^ cellText = cell->GetText()->Trim()->Replace("\a", "");
                     DateTime dateValue;
-                    if (DateTime::TryParse(cellText, dateValue)) {
+                    if (DateTime::TryParseExact(cellText, gcnew String("dd.mm.yyyy"), gcnew System::Globalization::DateTimeFormatInfo(),
+                        System::Globalization::DateTimeStyles::None, dateValue)) {
                         parsed_cell->columnType = "date";
                         parsed_parapraph->type = "dateInput";
                         for each (Run ^ run in cell->GetChildNodes(NodeType::Run, true)) {
@@ -113,8 +116,10 @@ namespace unsaintedWinAppLib {
                             if (run->Font->Underline == Underline::Single)
                                 child->underline = true;
                             child->fontSize = Convert::ToInt16(System::Math::Round(run->Font->Size, MidpointRounding::AwayFromZero));
-                            child->text = dateValue.ToShortDateString();
+                            child->text = dateValue.ToShortDateString(); // Должно быть run->Text, но перед этим надо сделать размещение нескольких отрезков
+                                                                         // разного форматирования в одной ячейке таблицы
                             parsed_parapraph->children->Add(child);
+                            break;
                         }
                         if (cell->GetChildNodes(NodeType::Run, true)->Count == 0) {
                             Child^ child = gcnew Child();
