@@ -330,7 +330,7 @@ namespace unsaintedWinAppLib {
         }
         catch (Exception^ ex)
         {
-
+            MessageBox::Show(ex->Message);
         }
         return epicris;
     }
