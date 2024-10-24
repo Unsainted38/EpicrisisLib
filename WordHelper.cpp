@@ -126,6 +126,7 @@ namespace unsaintedWinAppLib {
         Object^ bmRecommendations = (Object^)"Рекомендации";
         Object^ bmRelatedDiagnosis = (Object^)"СопутствующиеЗаболевания";
         Object^ bmSurname = (Object^)"Фамилия";
+        Object^ bmMkb = (Object^)"МКБ";
 
         Word::Range^ range;
         Word::Bookmark^ bookmark;
@@ -134,155 +135,91 @@ namespace unsaintedWinAppLib {
             bookmark = m_wordDoc->Bookmarks[bmHistoryNum];
             range = bookmark->Range;
             range->Text = Convert::ToString(m_epicris->HistoryNumber);
-        }        
-        /*Object^ findText = "{{НомерБолезни}}";
-        Object^ replaceWith = m_epicris->HistoryNumber;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
+        }
         // Год болезни
         if (m_wordDoc->Bookmarks->Exists((String^)bmHistoryYear)) {
             bookmark = m_wordDoc->Bookmarks[bmHistoryYear];
             range = bookmark->Range;
             range->Text = Convert::ToString(m_epicris->HistoryYear);
         }
-        /*findText = "{{ГодБолезни}}";
-        replaceWith = m_epicris->HistoryYear;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Имя
         if (m_wordDoc->Bookmarks->Exists((String^)bmName)) {
             bookmark = m_wordDoc->Bookmarks[bmName];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Name);
+            range->Text = m_epicris->Name;
         }
-        /*findText = "{{Имя}}";
-        replaceWith = m_epicris->Name;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike,matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Фамилия
         if (m_wordDoc->Bookmarks->Exists((String^)bmSurname)) {
             bookmark = m_wordDoc->Bookmarks[bmSurname];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Surname);
+            range->Text = m_epicris->Surname;
         }
-        /*findText = "{{Фамилия}}";
-        replaceWith = m_epicris->Surname;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Отчество
         if (m_wordDoc->Bookmarks->Exists((String^)bmPatronymic)) {
             bookmark = m_wordDoc->Bookmarks[bmPatronymic];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Patronymic);
+            range->Text = m_epicris->Patronymic;
         }
-        /*findText = "{{Отчество}}";
-        replaceWith = m_epicris->Patronymic;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата поступления
         if (m_wordDoc->Bookmarks->Exists((String^)bmIncomeDate)) {
             bookmark = m_wordDoc->Bookmarks[bmIncomeDate];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->IncomeDate);
+            range->Text = m_epicris->IncomeDate;
         }
-        /*findText = "{{ДатаПоступления}}";
-        replaceWith = m_epicris->IncomeDate;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата выписки
         if (m_wordDoc->Bookmarks->Exists((String^)bmOutcomeDate)) {
             bookmark = m_wordDoc->Bookmarks[bmOutcomeDate];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->OutcomeDate);
+            range->Text = m_epicris->OutcomeDate;
         }
-        /*findText = "{{ДатаВыписки}}";
-        replaceWith = m_epicris->OutcomeDate;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дата рождения
         if (m_wordDoc->Bookmarks->Exists((String^)bmBirthday)) {
             bookmark = m_wordDoc->Bookmarks[bmBirthday];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Birthday);
+            range->Text = m_epicris->Birthday;
         }
-        /*findText = "{{ДатаРождения}}";
-        replaceWith = m_epicris->Birthday;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Звание
         if (m_wordDoc->Bookmarks->Exists((String^)bmRank)) {
             bookmark = m_wordDoc->Bookmarks[bmRank];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Rank);
+            range->Text = m_epicris->Rank->ToLower();
         }
-        /*findText = "{{Звание}}";
-        replaceWith = m_epicris->Rank;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Номер части
         if (m_wordDoc->Bookmarks->Exists((String^)bmMilitaryUnit)) {
             bookmark = m_wordDoc->Bookmarks[bmMilitaryUnit];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->MilitaryUnit);
+            range->Text = m_epicris->MilitaryUnit;
         }
-        /*findText = "{{НомерЧасти}}";
-        replaceWith = m_epicris->MilitaryUnit;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Основной диагноз
         if (m_wordDoc->Bookmarks->Exists((String^)bmDiagnosis)) {
             bookmark = m_wordDoc->Bookmarks[bmDiagnosis];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Diagnosis);
+            range->Text = m_epicris->Diagnosis;
         }
-        /*findText = "{{ОснДиагноз}}";
-        replaceWith = m_epicris->Diagnosis;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
+        // МКБ
+        if (m_wordDoc->Bookmarks->Exists((String^)bmMkb)) {
+            bookmark = m_wordDoc->Bookmarks[bmMkb];
+            range = bookmark->Range;
+            range->Text = m_epicris->Mkb;
+        }
         // Осложнения
         if (m_wordDoc->Bookmarks->Exists((String^)bmComplications)) {
             bookmark = m_wordDoc->Bookmarks[bmComplications];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Complications);
+            range->Text = m_epicris->Complications;
         }
-        /*findText = "{{Осложнения}}";
-        replaceWith = m_epicris->Complications;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Сопутствующие заболевания
         if (m_wordDoc->Bookmarks->Exists((String^)bmRelatedDiagnosis)) {
             bookmark = m_wordDoc->Bookmarks[bmRelatedDiagnosis];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->RelatedDiagnosis);
+            range->Text = m_epicris->RelatedDiagnosis;
         }
-        /*findText = "{{СопутЗабол}}";
-        replaceWith = m_epicris->RelatedDiagnosis;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Анамнез
         if (m_wordDoc->Bookmarks->Exists((String^)bmAnamnes)) {
             bookmark = m_wordDoc->Bookmarks[bmAnamnes];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->AnamnesisText);
+            range->Text = m_epicris->AnamnesisText;
         }
-        /*findText = "{{Анамнез}}";
-        replaceWith = m_epicris->AnamnesisText;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Анализы
         if (m_wordDoc->Bookmarks->Exists((String^)bmAnalyzes)) {
             InsertAnalyzes(bmAnalyzes);
@@ -293,38 +230,23 @@ namespace unsaintedWinAppLib {
             range = bookmark->Range;
             range->Text = String::Join(", ", m_epicris->Therapy);
         }
-        /*findText = "{{Лечение}}";       
-        replaceWith = String::Join(", ", m_epicris->Therapy);
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Дополнительно
         if (m_wordDoc->Bookmarks->Exists((String^)bmSideInfo)) {
             bookmark = m_wordDoc->Bookmarks[bmSideInfo];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->SideData);
+            range->Text = m_epicris->SideData;
         }
-        /*findText = "{{Дополнительно}}";
-        replaceWith = m_epicris->SideData;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/
         // Рекомендации
         if (m_wordDoc->Bookmarks->Exists((String^)bmRecommendations)) {
             bookmark = m_wordDoc->Bookmarks[bmRecommendations];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->Recommendations);
-        }
-        /*findText = "{{Рекомендации}}";
-        replaceWith = m_epicris->Recommendations;
-        range->Find->Execute(findText, matchCase, matchWholeWord, matchWildcards,
-            matchSoundsLike, matchAllWordForms, forward, wrap, format, replaceWith, replaceAll,
-            matchKashida, matchDiacritics, matchAlefHamza, matchControl);*/ 
+            range->Text = m_epicris->Recommendations;
+        } 
         // ВВК
         if (m_wordDoc->Bookmarks->Exists((String^)bmVVK)) {
             bookmark = m_wordDoc->Bookmarks[bmVVK];
             range = bookmark->Range;
-            range->Text = Convert::ToString(m_epicris->VVK);
+            range->Text = m_epicris->VVK;
         }
     }
 
@@ -346,7 +268,7 @@ namespace unsaintedWinAppLib {
     {
         if (m_wordDoc == nullptr)
             return;
-        String^ diagnosis;
+        String^ diagnosis = "";
         if (m_epicris->Diagnosis->ToLower()->Contains("пневмония"))
             diagnosis = "пневмония ";
         else if (m_epicris->Diagnosis->ToLower()->Contains("бронхит"))
@@ -367,8 +289,14 @@ namespace unsaintedWinAppLib {
         Object^ allowSubstitutions = missing;
         Object^ lineEnding = missing;
         Object^ addBiDiMarks = missing;
-        m_wordDoc->SaveAs(fileName, fileFormat, lockComments, password, addToRecentFiles, writePassword, readOnlyRecommended, embedTrueTypeFonts,
-            saveNativePictureFormat,saveFormsData, saveAsAOCELetter, encoding, insertLineBreaks, allowSubstitutions, lineEnding, addBiDiMarks);
+        try {
+            m_wordDoc->SaveAs(fileName, fileFormat, lockComments, password, addToRecentFiles, writePassword, readOnlyRecommended, embedTrueTypeFonts,
+                saveNativePictureFormat, saveFormsData, saveAsAOCELetter, encoding, insertLineBreaks, allowSubstitutions, lineEnding, addBiDiMarks);
+        }
+        catch(Exception^ ex) {
+            MessageBox::Show(ex->Message);
+            m_wordDoc->Save();
+        }        
     }
 
     void WordHelper::InsertDoctorsRecords()
@@ -597,6 +525,7 @@ namespace unsaintedWinAppLib {
             return;
         Word::Bookmark^ bookmark = m_wordDoc->Bookmarks->default[bmAnalyzes];
         Word::Range^ range = bookmark->Range;
+        range->Text = "";
         //range->ParagraphFormat->LeftIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
         //range->ParagraphFormat->FirstLineIndent = m_wordDoc->PageSetup->LeftMargin / 28.3465f;
         m_wordApp->ScreenUpdating = false;
