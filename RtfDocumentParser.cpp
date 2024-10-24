@@ -55,9 +55,9 @@ namespace unsaintedWinAppLib {
                     Column^ parsed_column = gcnew Column();
                     parsed_cell->type = "tableHeaderCell";
                     parsed_cell->children = gcnew List<Child^>();
-                    String^ cellText = cell->GetText()->Trim();
+                    String^ cellText = cell->GetText()->Trim()->Replace("\a", "");
                     DateTime dateValue;
-                    parsed_column->title = cell->GetText()->Replace("\a", "");
+                    parsed_column->title = cellText;
                     if (cellText->ToLower()->Contains("дата")) {
                         parsed_column->type = "date";
                         DateTime::TryParse(cellText, dateValue);
@@ -101,7 +101,7 @@ namespace unsaintedWinAppLib {
                     parsed_cell->type = "tableDataCell";
                     parsed_cell->paragraphs = gcnew List<Paragraph^>();
                     Paragraph^ parsed_parapraph = gcnew Paragraph();
-                    String^ cellText = cell->GetText()->Trim();
+                    String^ cellText = cell->GetText()->Trim()->Replace("\a", "");
                     DateTime dateValue;
                     if (DateTime::TryParse(cellText, dateValue)) {
                         parsed_cell->columnType = "date";
